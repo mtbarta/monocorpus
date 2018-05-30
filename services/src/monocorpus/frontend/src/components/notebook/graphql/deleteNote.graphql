@@ -1,0 +1,13 @@
+mutation DeleteNote($id: ID, $title:String, $body:String, $author:String, $team:String, $dateCreated:String, $dateModified:String, $type:String, $link:String){
+    deleteNote(id: $id, title: $title, body:$body, author:$author, team:$team, dateCreated:$dateCreated, dateModified:$dateModified, type:$type, link:$link) {
+    id,
+    title,
+    body,
+    author,
+    team,
+    dateCreated,
+    dateModified,
+    type,
+    link
+    }
+}

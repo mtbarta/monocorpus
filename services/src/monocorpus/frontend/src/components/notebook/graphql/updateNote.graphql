@@ -1,0 +1,14 @@
+mutation UpdateNotes($id: ID, $title:String, $body:String, $author:String, $team:String, $dateCreated:String, $dateModified:String, $type:String, $link:String, $image:String, $tags:[String]){
+    updateNote(id: $id, title: $title, body:$body, author:$author, team:$team, dateCreated:$dateCreated, dateModified:$dateModified, type:$type, link:$link, image:$image, tags:$tags) {
+    id,
+    title,
+    body,
+    author,
+    team,
+    type,
+    link,
+    dateCreated,
+    dateModified,
+    image
+    }
+}

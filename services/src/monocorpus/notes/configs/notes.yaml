@@ -1,0 +1,5 @@
+port: '8889'
+dbHost: '172.20.0.2'
+dbPort: '27017'
+dbName: 'notes'
+collection: 'store'
