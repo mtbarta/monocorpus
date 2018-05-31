@@ -1,0 +1,8 @@
+---
+layout: default
+img: equation.png
+category: Services
+title: Markdown and KaTex support
+description: |
+---
+Render markdown and KaTex directly in your notes.

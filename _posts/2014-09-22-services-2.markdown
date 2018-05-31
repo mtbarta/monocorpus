@@ -1,0 +1,8 @@
+---
+layout: default
+img: dog.png
+category: Services
+title: Unobtrusive UI
+description: |
+---
+  Chronological note order lets you take the note as ideas occur. Order your notes later by filtering on title or tags.

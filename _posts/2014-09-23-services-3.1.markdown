@@ -1,0 +1,8 @@
+---
+layout: default
+img: phones.png
+category: Services
+title: Full Text Search
+description: |
+---
+Search quickly and efficiently across all of your notes to remember key details of your work.

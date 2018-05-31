@@ -1,0 +1,41 @@
+# ----------------------- #
+#      Main Configs       #
+# ----------------------- #
+
+url: https://mtbarta.github.io/monocorpus
+title: Monocorpus
+email: your-email@domain.com
+author: Matt Barta
+description: > # "Write an awesome description for your new site here. 
+  Note Taking Application for Software Engineers and Machine Learning
+  practitioners. Take notes, share them, learn and work faster.
+copyright: 'Copyright &copy; 2018 Matt Barta. All Rights Reserved.'
+credits: 'Credits: Thanks to Shane for <a href="https://github.com/swcool/landing-page-theme">landing-page-theme</a>.'
+
+# ----------------------- #
+#    Jekyll & Plugins     #
+# ----------------------- #
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+
+# ----------------------- #
+#   3rd Party Settings    #
+# ----------------------- #
+
+social:
+  - title: github
+    url: https://github.com/mtbarta/monocorpus
+
+about: >
+  MonoCorpus is a note taking app for software and machine learning engineers.
+  Taking notes as you work lets you return to projects, solve bugs, and onboard
+  team members quickly. 
+  <p>
+  It's not uncommon in software to run across the same bug twice, or lose track
+  of how something was deployed. Machine learning algorithms can be difficult to develop
+  if care isn't taken to remember where and how things were made. This process can be
+  made significantly faster with better note taking.
+  </p>
+
