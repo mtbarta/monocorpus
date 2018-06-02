@@ -5,9 +5,10 @@ import (
 	"errors"
 	"net/http"
 
+	notes "monocorpus/notes/pkg/types"
+
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
-	notes "monocorpus/notes/pkg/types"
 )
 
 func OnError(w http.ResponseWriter, r *http.Request, err string) {
@@ -40,14 +41,13 @@ func TeamAuthMiddleware(next http.Handler) http.Handler {
 			http.Error(w, http.StatusText(code), code)
 			return
 		}
-		if claims["team"] == nil || claims["email"] == nil {
+		if claims["email"] == nil {
 			code := http.StatusUnauthorized
 			http.Error(w, http.StatusText(code), code)
 			return
 		}
 
-		newRequest := r.WithContext(context.WithValue(r.Context(), "team", claims["team"]))
-		newRequest = newRequest.WithContext(context.WithValue(newRequest.Context(), "email", claims["email"]))
+		newRequest := r.WithContext(context.WithValue(r.Context(), "email", claims["email"]))
 
 		next.ServeHTTP(w, newRequest)
 	})

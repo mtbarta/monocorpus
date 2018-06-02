@@ -41,17 +41,6 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	// logger.Log("loginserver", loginHost+":"+loginPort)
-	// conn, err := grpc.Dial(loginHost+":"+loginPort, grpc.WithInsecure())
-	// if err != nil {
-	// 	logger.Log("did not connect:", err)
-	// 	os.Exit(1)
-	// }
-	// defer conn.Close()
-
-	// Transport domain.
-	// tracer := stdopentracing.GlobalTracer() // no-op
-	// ctx := context.Background()
 	r := mux.NewRouter()
 
 	logger.Log("notesserver", notesHost+":"+notesPort)
@@ -87,10 +76,6 @@ func main() {
 		notesHandler = jwtMiddleware.Handler(notesHandler)
 	}
 
-	// notesHandler := accessControl(app.MakeNotesHandler(schema, &logger))
-
-	// authNotesHandler := jwtMiddleware.Handler(notesHandler)
-	// authNotesHandler = app.TeamAuthMiddleware(authNotesHandler)
 	r.Handle("/notes", notesHandler)
 
 	r.HandleFunc("/health", app.HealthCheckHandlerFunc)
