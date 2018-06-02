@@ -33,7 +33,7 @@ services:
       retries: 3
       start_period: 15s
   notes:
-    image: 
+    image: notes:latest
     restart: always
     environment:
       - PORT=8889
@@ -68,7 +68,7 @@ services:
       retries: 3
       start_period: 15s
   gateway:
-    image: 
+    image: gateway:latest
     restart: always
     environment:
       LOGINHOST: login
@@ -132,14 +132,14 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
-  front-end:
-    image:
+  frontend:
+    image: frontend:latest
     restart: always
     networks:
       - web
       - backend
     labels:
-      - "traefik.backend=front-end"
+      - "traefik.backend=frontend"
       - "traefik.docker.network=${NETWORK}_web"
       - "traefik.frontend.rule=PathPrefix:/;Host:$HOST"
       - "traefik.enable=true"
@@ -163,7 +163,7 @@ services:
       - "8080:8080" #The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock #So that Traefik can listen to the Docker events
-      - ./traefik/${ENV}.traefik.toml:/traefik.toml
+      - ./monocorpus/services/src/monogocorpus/traefik/${ENV}.traefik.toml:/traefik.toml
       - ./traefik/acme.json:/acme.json
     networks:
       - web
