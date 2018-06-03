@@ -1,4 +1,4 @@
-FROM jboss/base-jdk:8-alpine
+FROM jboss/base-jdk:8
 
 ENV KEYCLOAK_VERSION 4.0.0.Beta1
 ENV MAVEN_VERSION 3.3.9

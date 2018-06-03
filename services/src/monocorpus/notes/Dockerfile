@@ -8,7 +8,7 @@ RUN apk update && apk add git && apk add ca-certificates
 RUN adduser -D -g '' appuser
 
 # copy all sources in
-COPY . $GOPATH/src/monocorpus/notes
+COPY . $GOPATH/src
 WORKDIR $GOPATH/src/monocorpus/notes
 
 # get dependancies
@@ -17,7 +17,7 @@ RUN go get -d -v ./...
 
 #build the binary
 WORKDIR $GOPATH/src/monocorpus/notes/cmd
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags '-w -s' -o /go/bin/main main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags '-w -s' -o /go/bin/main notes.go
 
 WORKDIR $GOPATH/src/monocorpus/notes/cmd/healthcheck
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags '-w -s' -o /go/bin/healthcheck healthcheck.go

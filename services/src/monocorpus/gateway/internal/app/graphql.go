@@ -14,9 +14,6 @@ import (
 	graphql "github.com/graph-gophers/graphql-go"
 )
 
-// var logger = log.NewJSONLogger(os.Stdout)
-// var klogger = log.NewLogfmtLogger(os.Stdout)
-
 //the graphql schema
 var Schema = `
 	schema {
@@ -79,10 +76,6 @@ func (r *Resolver) Search(ctx context.Context, args *struct {
 		authors = nil
 	}
 
-	// team := pointerToString(args.Team)
-
-	// from, to := ParseFromAndTo(args.Fromdate, args.Todate)
-
 	q := pointerToString(args.Query)
 	var notes []types.Note
 	if r.searchClient != nil {
@@ -141,19 +134,11 @@ func (r *Resolver) Notes(ctx context.Context, args *struct {
 
 	title := pointerToString(args.Title)
 
-	var team string
-	if args.Team == nil {
-		team = ctx.Value("team").(string)
-	} else {
-		team = pointerToString(args.Team)
-	}
-
 	from, to := ParseFromAndTo(args.Fromdate, args.Todate)
 
 	query := npb.Query{
 		IDs:      ids, // *args.IDs,
 		Title:    title,
-		Team:     team,
 		Authors:  authors, //*args.authors,
 		Todate:   to,
 		Fromdate: from,
@@ -285,10 +270,7 @@ func (r *Resolver) CreateNote(ctx context.Context, args *struct {
 }) (*NoteResolver, error) {
 
 	title := pointerToNil(args.Title)
-	team := pointerToNil(args.Team)
-	if team == "" {
-		team = ctx.Value("team").(string)
-	}
+
 	id := pointerToNil(args.ID)
 	body := pointerToNil(args.Body)
 	author := pointerToNil(args.Author)
@@ -316,7 +298,6 @@ func (r *Resolver) CreateNote(ctx context.Context, args *struct {
 		Id:           id,
 		Title:        title,
 		Body:         body,
-		Team:         team,
 		Author:       author,
 		DateCreated:  &createdTime,
 		DateModified: &modifiedTime,
@@ -346,7 +327,7 @@ func (r *Resolver) DeleteNote(ctx context.Context, args *struct {
 }) (*NoteResolver, error) {
 
 	title := pointerToNil(args.Title)
-	team := pointerToNil(args.Team)
+
 	id := pointerToNil(args.ID)
 	body := pointerToNil(args.Body)
 	author := pointerToNil(args.Author)
@@ -375,7 +356,6 @@ func (r *Resolver) DeleteNote(ctx context.Context, args *struct {
 		Id:           id,
 		Title:        title,
 		Body:         body,
-		Team:         team,
 		Author:       author,
 		DateCreated:  &createdTime,
 		DateModified: &modifiedTime,
@@ -403,7 +383,6 @@ func (r *Resolver) UpdateNote(ctx context.Context, args *struct {
 }) (*NoteResolver, error) {
 
 	title := pointerToNil(args.Title)
-	team := pointerToNil(args.Team)
 	id := pointerToNil(args.ID)
 	body := pointerToNil(args.Body)
 	author := pointerToNil(args.Author)
@@ -435,7 +414,6 @@ func (r *Resolver) UpdateNote(ctx context.Context, args *struct {
 		Id:           id,
 		Title:        title,
 		Body:         body,
-		Team:         team,
 		Author:       author,
 		DateCreated:  &createdTime,
 		DateModified: &modifiedTime,

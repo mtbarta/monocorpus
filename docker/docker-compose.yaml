@@ -80,7 +80,7 @@ services:
       SEARCHINDEX: notes
       SEARCHTYPE: note
       PORT: 8081
-      PUBKEY: $PUBKEY
+      PUBKEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0fJj+S5cyjKEbPLH08bi4zcseRXFI4YmDI/eRDHLqZzqTsjzICs6owMH3QV0fDP8J2ADuPjswZX+MBkmIvk/dSXBJ6J4mHF+G6b9yKtVh5Jz071qpkkRlGZS4yj0cDMftVPM+Q0I1ReAeEBnUqrxiD5OMiTW2u3kOfkLVnQvglsiP3+abwPS4DPP9uc23KyRoM/aJDJkJ+ySo64Q/Dh0Ufkqhw1IOAIaeW31bgm+piVEU/60AOFu8DHpoGrHY/4EZPU446Id+Qb/d1IGEJwR63uQU3DjAGP7Dao3VvNp5NOjy6VnaSDzuL7F3qfnC0VLmruMioqN2Wyoslfda6t+LwIDAQAB\n-----END PUBLIC KEY-----"
     healthcheck:
       test: ["CMD", "/go/bin/healthcheck"]
       interval: 30s
@@ -110,8 +110,8 @@ services:
       - POSTGRES_DATABASE=login
       - KEYCLOAK_USER=$KEYCLOAK_USER
       - KEYCLOAK_PASSWORD=$KEYCLOAK_PASSWORD
-    ports:
-      - 8090:8080
+    # ports:
+    #   - 8090:8080
     depends_on:
       - postgres
     networks:
@@ -123,9 +123,9 @@ services:
       - "traefik.frontend.rule=PathPrefix:/auth;Host:$HOST"
       - "traefik.enable=true"
       - "traefik.port=8080"
-      - "traefik.admin.frontend.rule=PathPrefix:/auth/admin;Host:$HOST"
-      - "traefik.admin.protocol=https"
-      - "traefik.admin.whitelist.sourceRange=73.169.138.154"
+      # - "traefik.admin.frontend.rule=PathPrefix:/auth/admin;Host:$HOST"
+      # - "traefik.admin.protocol=https"
+      # - "traefik.admin.whitelist.sourceRange=73.169.138.154"
     healthcheck:
       test: curl localhost:8080/auth
       interval: 30s
@@ -138,6 +138,8 @@ services:
     networks:
       - web
       - backend
+    # ports:
+    #   - "8091:80"
     labels:
       - "traefik.backend=frontend"
       - "traefik.docker.network=${NETWORK}_web"
@@ -163,7 +165,7 @@ services:
       - "8080:8080" #The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock #So that Traefik can listen to the Docker events
-      - ./monocorpus/services/src/monogocorpus/traefik/${ENV}.traefik.toml:/traefik.toml
+      - ../services/src/monocorpus/traefik/${ENV}.traefik.toml:/traefik.toml:ro
       - ./traefik/acme.json:/acme.json
     networks:
       - web
