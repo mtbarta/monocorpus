@@ -32,6 +32,16 @@ Microservices:
   - CRUD functions to Mongo.
 * Gateway
   - GraphQL interface to notes and search.
+  
+### Setup
+
+Deployment requires the gateway to be aware of keycloak's public key for token decryption.
+
+1. `docker-compose up -d keycloak` to bring up the keycloak instance.
+2. Find the notes realm public key and replace the dummy key in the `docker-compose.yaml` file.
+3. `docker-compose up -d` to bring the whole system up.
+
+This process is actively being worked on and should be simplified in the near future.
 
 ## Notable Dependencies
 
