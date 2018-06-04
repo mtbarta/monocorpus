@@ -27,12 +27,29 @@ MonoCorpus uses Vuejs on the frontend, GraphQL as a gateway layer between HTTP a
 
 MonoCorpus relies on Keycloak for user auth, traefik as a proxy to the backend, and Elasticsearch for full text search.
 
+Microservices:
+* Notes
+  - CRUD functions to Mongo.
+* Gateway
+  - GraphQL interface to notes and search.
+
 ## Notable Dependencies
 
 Search - [Elasticsearch](https://github.com/elastic/elasticsearch)
+
 Proxy -  [Traefik](https://github.com/containous/traefik)
+
 Authentication - [Keycloak](https://github.com/keycloak/keycloak)
 
+## Contributors
+
+@mtbarta
+
+## How to Contribute
+
+Please feel free to send me a PR. There's a lot of low-hanging fruit across this project -- refactoring, documentation, testing. Let me know if there's something you want to work on and we can discuss.
+
+Please rebase PRs if necessary -- https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request
 
 ## License
 
