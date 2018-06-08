@@ -1,8 +1,8 @@
 ---
 layout: default
-img: phones.png
+img: working-by-title.gif
 category: Services
-title: Full Text Search
+title: Work by project
 description: |
 ---
-Search quickly and efficiently across all of your notes to remember key details of your work.
+Filter and add notes by title for focused note taking.
