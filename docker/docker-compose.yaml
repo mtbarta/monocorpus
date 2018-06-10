@@ -102,7 +102,9 @@ services:
   keycloak:
     image: jboss/keycloak-postgres:4.0.0.Beta1
     restart: always
+    command: "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/monocorpus/realm-export.json"
     environment:
+      - DB_VENDOR=POSTGRES
       - PROXY_ADDRESS_FORWARDING=true
       - POSTGRES_ADDR=postgres
       - POSTGRES_USER=$POSTGRES_USER
@@ -110,8 +112,8 @@ services:
       - POSTGRES_DATABASE=login
       - KEYCLOAK_USER=$KEYCLOAK_USER
       - KEYCLOAK_PASSWORD=$KEYCLOAK_PASSWORD
-    # ports:
-    #   - 8090:8080
+    volumes:
+      - "../services/src/monocorpus/keycloak/realm-export.json:/opt/jboss/monocorpus/realm-export.json:ro"
     depends_on:
       - postgres
     networks:
