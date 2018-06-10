@@ -35,6 +35,8 @@ Microservices:
   
 ### Setup
 
+Monocorpus should be installed inside of your $GOPATH.
+
 Deployment requires the gateway to be aware of keycloak's public key for token decryption.
 
 1. `docker-compose up -d keycloak` to bring up the keycloak instance.
