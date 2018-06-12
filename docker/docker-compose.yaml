@@ -113,7 +113,7 @@ services:
       - KEYCLOAK_USER=$KEYCLOAK_USER
       - KEYCLOAK_PASSWORD=$KEYCLOAK_PASSWORD
     volumes:
-      - "../services/src/monocorpus/keycloak/realm-export.json:/opt/jboss/monocorpus/realm-export.json:ro"
+      - "../pkg/keycloak/realm-export.json:/opt/jboss/monocorpus/realm-export.json:ro"
     depends_on:
       - postgres
     networks:
@@ -125,9 +125,6 @@ services:
       - "traefik.frontend.rule=PathPrefix:/auth;Host:$HOST"
       - "traefik.enable=true"
       - "traefik.port=8080"
-      # - "traefik.admin.frontend.rule=PathPrefix:/auth/admin;Host:$HOST"
-      # - "traefik.admin.protocol=https"
-      # - "traefik.admin.whitelist.sourceRange=73.169.138.154"
     healthcheck:
       test: curl localhost:8080/auth
       interval: 30s
@@ -140,8 +137,6 @@ services:
     networks:
       - web
       - backend
-    # ports:
-    #   - "8091:80"
     labels:
       - "traefik.backend=frontend"
       - "traefik.docker.network=${NETWORK}_web"
@@ -167,7 +162,7 @@ services:
       - "8080:8080" #The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock #So that Traefik can listen to the Docker events
-      - ../services/src/monocorpus/traefik/${ENV}.traefik.toml:/traefik.toml:ro
+      - ../pkg/traefik/${ENV}.traefik.toml:/traefik.toml:ro
       - ./traefik/acme.json:/acme.json
     networks:
       - web
