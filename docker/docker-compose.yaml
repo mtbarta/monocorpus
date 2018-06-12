@@ -79,7 +79,7 @@ services:
       SEARCHPORT: 9200
       SEARCHINDEX: notes
       SEARCHTYPE: note
-      PORT: 8081
+      HTTPPORT: 8081
       PUBKEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0fJj+S5cyjKEbPLH08bi4zcseRXFI4YmDI/eRDHLqZzqTsjzICs6owMH3QV0fDP8J2ADuPjswZX+MBkmIvk/dSXBJ6J4mHF+G6b9yKtVh5Jz071qpkkRlGZS4yj0cDMftVPM+Q0I1ReAeEBnUqrxiD5OMiTW2u3kOfkLVnQvglsiP3+abwPS4DPP9uc23KyRoM/aJDJkJ+ySo64Q/Dh0Ufkqhw1IOAIaeW31bgm+piVEU/60AOFu8DHpoGrHY/4EZPU446Id+Qb/d1IGEJwR63uQU3DjAGP7Dao3VvNp5NOjy6VnaSDzuL7F3qfnC0VLmruMioqN2Wyoslfda6t+LwIDAQAB\n-----END PUBLIC KEY-----"
     healthcheck:
       test: ["CMD", "/go/bin/healthcheck"]

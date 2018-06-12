@@ -30,7 +30,7 @@ func main() {
 	searchPort := viper.GetString("searchPort")
 	searchIndex := viper.GetString("searchIndex")
 	searchType := viper.GetString("searchType")
-	port := viper.GetString("port")
+	port := viper.GetString("HttpPort")
 
 	pubKey := viper.GetString("pubKey")
 
