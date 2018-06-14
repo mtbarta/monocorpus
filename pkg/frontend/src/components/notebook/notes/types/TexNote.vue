@@ -1,16 +1,15 @@
 <<template>
-<!-- <div class="note"> -->
-  <v-card color="" class="">
-      <!-- {{note.title}} -->
-      <title-box :title="title"
-                 :date="note.dateCreated"
-                 :updateTitle="updateTitle" 
-                 :readOnly="readOnly",
-                 :deleteNote="deleteNote"
-                 :id="note.id"
-                 />
-    <!-- <div class="note-body" -->
-      <v-card-text
+  <v-card>
+
+    <title-box :title="title"
+                :date="note.dateCreated"
+                :updateTitle="updateTitle" 
+                :readOnly="readOnly"
+                :deleteNote="deleteNote"
+                :id="note.id"
+                />
+
+    <v-card-text
         @click="editingNote"
         v-on-clickaway="renderingNote">
       <Editor v-if="isEditing && !readOnly"
@@ -18,7 +17,6 @@
         :changeThrottle="500"
         :onReady="onMounted"
         :onCodeChange="onCodeChange"
-        :onFocus="onFocus"
         :options="editorOptions"
         >
       </Editor>
@@ -31,20 +29,19 @@
     <div class="footer">
         <a v-for="btn in note.buttons" v-bind:class="'btn btn-' + btn.type + ' btn-xs'" v-bind:href="btn.href" v-bind:target="btn.target">{{btn.message}}</a>
     </div>
-<!-- </div> -->
-</v-card>
+
+  </v-card>
 </template>
 
 <script>
-require("codemirror/mode/stex/stex")
+require('codemirror/mode/stex/stex')
 import { mixin as clickaway } from 'vue-clickaway';
 import Editor from '@/components/notebook/notes/codemirror/editor.vue'
 import TitleBox from './components/Title'
 import { mapActions } from 'vuex'
 import katex from 'katex'
-import {normalizeDate} from '@/util/dateHelper'
 import Note from '../note'
-import sanitize from 'sanitize-html'
+// import sanitize from 'sanitize-html'
 
 /**
  * line will be a note object.
@@ -67,7 +64,7 @@ export default {
           height: 'auto',
           tabSize: 4,
           mode:  {
-            name: "stex",
+            name: 'stex',
             highlightFormatting: true
           },
           lineNumbers: false,
@@ -96,13 +93,9 @@ export default {
         this.editor = editor;
       },
       onCodeChange(newCode) {
-        // console.log(editor.getValue());
         let n = new Note(this.note)
         n.body = newCode
         this.updateNote(n)
-      },
-      onFocus(cm) {
-        // console.log("focus")
       },
       updateTitle(title) {
         let n = new Note(this.note)
@@ -115,17 +108,14 @@ export default {
       renderingNote() {
         this.isEditing = false
       },
-      formatDate(date) {
-        return normalizeDate(date)
-      },
-      renderCode(string) {
-        return sanitize(katex.renderToString(string, {
+      renderCode(s) {
+        return katex.renderToString(s, {
           throwOnError: false
-        }))
+        })
       }
       
     }
-  }
+}
 </script>
 
 <style scoped>
