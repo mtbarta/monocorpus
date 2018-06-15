@@ -79,8 +79,8 @@ services:
       SEARCHPORT: 9200
       SEARCHINDEX: notes
       SEARCHTYPE: note
-      PORT: 8081
-      PUBKEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0fJj+S5cyjKEbPLH08bi4zcseRXFI4YmDI/eRDHLqZzqTsjzICs6owMH3QV0fDP8J2ADuPjswZX+MBkmIvk/dSXBJ6J4mHF+G6b9yKtVh5Jz071qpkkRlGZS4yj0cDMftVPM+Q0I1ReAeEBnUqrxiD5OMiTW2u3kOfkLVnQvglsiP3+abwPS4DPP9uc23KyRoM/aJDJkJ+ySo64Q/Dh0Ufkqhw1IOAIaeW31bgm+piVEU/60AOFu8DHpoGrHY/4EZPU446Id+Qb/d1IGEJwR63uQU3DjAGP7Dao3VvNp5NOjy6VnaSDzuL7F3qfnC0VLmruMioqN2Wyoslfda6t+LwIDAQAB\n-----END PUBLIC KEY-----"
+      HTTPPORT: 8081
+      PUBKEY: "-----BEGIN PUBLIC KEY-----\n${KEY}\n-----END PUBLIC KEY-----"
     healthcheck:
       test: ["CMD", "/go/bin/healthcheck"]
       interval: 30s
@@ -100,9 +100,8 @@ services:
       - "traefik.enable=true"
       - "traefik.port=8081"
   keycloak:
-    image: jboss/keycloak-postgres:4.0.0.Beta1
+    image: keycloak:latest
     restart: always
-    command: "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/monocorpus/realm-export.json"
     environment:
       - DB_VENDOR=POSTGRES
       - PROXY_ADDRESS_FORWARDING=true
@@ -112,8 +111,6 @@ services:
       - POSTGRES_DATABASE=login
       - KEYCLOAK_USER=$KEYCLOAK_USER
       - KEYCLOAK_PASSWORD=$KEYCLOAK_PASSWORD
-    volumes:
-      - "../services/src/monocorpus/keycloak/realm-export.json:/opt/jboss/monocorpus/realm-export.json:ro"
     depends_on:
       - postgres
     networks:
@@ -125,9 +122,6 @@ services:
       - "traefik.frontend.rule=PathPrefix:/auth;Host:$HOST"
       - "traefik.enable=true"
       - "traefik.port=8080"
-      # - "traefik.admin.frontend.rule=PathPrefix:/auth/admin;Host:$HOST"
-      # - "traefik.admin.protocol=https"
-      # - "traefik.admin.whitelist.sourceRange=73.169.138.154"
     healthcheck:
       test: curl localhost:8080/auth
       interval: 30s
@@ -140,8 +134,6 @@ services:
     networks:
       - web
       - backend
-    # ports:
-    #   - "8091:80"
     labels:
       - "traefik.backend=frontend"
       - "traefik.docker.network=${NETWORK}_web"
@@ -156,6 +148,28 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
+  # frontend:
+  #   image: node:9.11-alpine
+  #   command: 'npm run dev'
+  #   working_dir: /frontend
+  #   user: node
+  #   environment:
+  #     - PORT=8091
+  #     - HOST=0.0.0.0
+  #   volumes:
+  #     - "../pkg/frontend:/frontend:ro"
+  #   restart: always
+  #   networks:
+  #     - web
+  #     - backend
+  #   labels:
+  #     - "traefik.backend=frontend"
+  #     - "traefik.docker.network=${NETWORK}_web"
+  #     - "traefik.frontend.rule=PathPrefix:/;Host:$HOST"
+  #     - "traefik.enable=true"
+  #     - "traefik.port=8091"
+  #     - "traefik.default.protocol=http"
+  #     - "traefik.passHostHeader=true"
   traefik:
     image: traefik:1.5.4-alpine
     container_name: traefik
@@ -167,7 +181,7 @@ services:
       - "8080:8080" #The Web UI (enabled by --api)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock #So that Traefik can listen to the Docker events
-      - ../services/src/monocorpus/traefik/${ENV}.traefik.toml:/traefik.toml:ro
+      - ../pkg/traefik/${ENV}.traefik.toml:/traefik.toml:ro
       - ./traefik/acme.json:/acme.json
     networks:
       - web
