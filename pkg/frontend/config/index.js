@@ -6,7 +6,7 @@ const path = require('path')
 
 module.exports = {
   api: {
-    "host": "http://localhost/notes" //process.env.API || '/notes'
+    "host": "/notes"
   },
   notebook: {
     supportedNotes: [
