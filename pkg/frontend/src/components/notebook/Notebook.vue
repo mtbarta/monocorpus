@@ -12,6 +12,7 @@
     >
     </note-list>
 
+    <!-- load more -->
     <v-layout row justify-center v-if="!$apollo.queries.notes.loading && notes.length == 0">
       <v-flex class="text-xs-center pt-3">
         <v-divider class="mb-3"/>
@@ -30,6 +31,7 @@
     <div v-else>
       No more notes found.
     </div>
+    <!-- end load more -->
   </v-container>
 </template>
 
