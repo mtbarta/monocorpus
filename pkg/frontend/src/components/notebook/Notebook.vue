@@ -76,7 +76,11 @@ export default  {
       notes: {
         query: notesQuery,
         variables () {
-          return this.startingFilter.getNotebookQuery()
+          let q = {
+            ...this.startingFilter.getNotebookQuery(),
+            title: this.titleFilter
+          }
+          return q
         }
       }
   },

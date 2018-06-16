@@ -14,7 +14,7 @@
           @keyup.enter="saveEdit"
           @blur="saveEdit">
       </v-text-field>
-      <router-link v-if="!editing" tag="a" class="pageLink" :to="{path: '/notebook', params: {titleFilter: title}}">
+      <router-link v-if="!editing" tag="a" class="pageLink" :to="{path: '/notebook', query: {titleFilter: title}}">
           <a>
             <v-icon>filter_list</v-icon>
           </a>

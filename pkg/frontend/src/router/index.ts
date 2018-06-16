@@ -23,7 +23,9 @@ const router = new Router({
           name: 'Notebook',
           component: Notebook,
           meta: { requiresAuth: true },
-          props: true
+          props: (route) => {
+            return route.query
+          }
         },
         {
           path: 'search/',
