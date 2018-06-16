@@ -43,7 +43,6 @@ const webpackConfig = merge(baseWebpackConfig, {
     }
   },
   plugins: [
-    //add in dotenv file variables. especially for HOST.
     new Dotenv({
       path: '.env'
     }),

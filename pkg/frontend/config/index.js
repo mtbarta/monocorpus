@@ -1,12 +1,11 @@
 'use strict'
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
-
 const path = require('path')
 
 module.exports = {
   api: {
-    "host": "/notes"
+    host: '/notes'
   },
   notebook: {
     supportedNotes: [
@@ -23,7 +22,6 @@ module.exports = {
       "enable-cors": true,
       "url": process.env.AUTHAPI || "/auth",
       "auth-server-url": process.env.AUTHAPI || "/auth",
-      // "redirectUri": "https://localhost:8080",
       "ssl-required": "external",
       "resource": "notebook",
       "public-client": true,
@@ -39,14 +37,12 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      // 'http://localhost/auth': {
-      //   target: 'http://localhost:8090'
-      // }
     },
-
     // Various Dev Server settings
     host: process.env.HOST || 'localhost', // can be overwritten by process.env.HOST
     port: process.env.PORT || 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    "url": process.env.AUTHAPI || "/auth",
+    "auth-server-url": process.env.AUTHAPI || "/auth",
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,
@@ -58,12 +54,12 @@ module.exports = {
      */
 
     // https://webpack.js.org/configuration/devtool/#development
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'source-map', //'cheap-module-eval-source-map',
 
     // If you have problems debugging vue-files in devtools,
     // set this to false - it *may* help
     // https://vue-loader.vuejs.org/en/options.html#cachebusting
-    cacheBusting: true,
+    cacheBusting: false,
 
     cssSourceMap: true
   },
