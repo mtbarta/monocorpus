@@ -60,7 +60,7 @@ Deployment requires the gateway to be aware of keycloak's public key for token d
 
 1. `docker-compose up -d keycloak` to bring up the keycloak instance.
 2. Find the notes realm public key and replace the dummy key in the `.env` file.
-3. Elasticsearch saves data to docker/deploy/volumes/es. This directory needs to be writable by elasticsearch. Run `chown -R 1000:1000 es` in the volumes directory to fix this.
+3. Elasticsearch may need permissions to write to your elasticsearch data directory. Run `chown -R 1000:1000 es` to fix this.
 4. Keycloak's realm requires knowledge of valid redirect urls. If you are not running on localhost, this needs to be changed.
 5. `docker-compose up -d` to bring the whole system up.
 
