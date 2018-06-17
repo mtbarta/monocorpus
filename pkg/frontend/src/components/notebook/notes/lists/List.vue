@@ -18,8 +18,6 @@ import { Component, Emit, Inject, Model, Prop, Provide, Vue, Watch } from 'vue-p
 import NoteWrapper from '../NoteWrapper.vue'
 import Note from '../note'
 
-// import '@/assets/animate.css'
-
 @Component({
   components: {
     NoteWrapper

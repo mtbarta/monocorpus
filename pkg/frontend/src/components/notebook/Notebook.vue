@@ -16,21 +16,20 @@
     <v-layout row justify-center v-if="!$apollo.queries.notes.loading && notes.length == 0">
       <v-flex class="text-xs-center pt-3">
         <v-divider class="mb-3"/>
-        <v-btn large
-        @click="fetchOlderNotes" 
-        >Load More</v-btn>
-
+        <v-btn @click="isTriggerFirstLoad = true" v-if="!isTriggerFirstLoad"
+         large>Load More</v-btn>
+        <infinite-loading v-else @infinite="fetchOlderNotes" >
+          <span slot="no-more">
+            No more notes found.
+          </span>
+        </infinite-loading>
       </v-flex>
     </v-layout>
     
-    <infinite-loading v-else-if="$apollo.queries.notes.loading != true && numCallsAfterEmpty < 3" @infinite="fetchOlderNotes" >
-      <span slot="no-more">
-        No more notes found.
-      </span>
-    </infinite-loading>
-    <div v-else>
+    
+    <!-- <div v-else>
       No more notes found.
-    </div>
+    </div> -->
     <!-- end load more -->
   </v-container>
 </template>
@@ -66,7 +65,8 @@ export default  {
       skipUpdates: false,
       hasMore: true,
       numCallsAfterEmpty: 0, //infinite loading complete() isn't working.
-      error: null
+      error: null,
+      isTriggerFirstLoad: false
     }
   },
   mounted() {
@@ -102,7 +102,7 @@ export default  {
      * this is how vue-apollo says to fetch more from a query.
      */
     fetchOlderNotes(state) {
-      const newFilter = this.noteFilter.fetchOlderNotesQuery(3, 'days')
+      const newFilter = this.noteFilter.fetchOlderNotesQuery(2, 'weeks')
 
       this.$apollo.queries.notes.fetchMore({
         variables: newFilter,
