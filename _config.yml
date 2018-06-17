@@ -29,13 +29,20 @@ social:
     url: https://github.com/mtbarta/monocorpus
 
 about: >
-  MonoCorpus is a note taking app for software and machine learning engineers.
-  Taking notes as you work lets you return to projects, solve bugs, and onboard
-  team members quickly. 
+  MonoCorpus is a note taking app for software and machine learning engineers
+  meant to encourage learning, sharing, and easier development.
   <p>
-  It's not uncommon in software to run across the same bug twice, or lose track
-  of how something was deployed. Machine learning algorithms can be difficult to develop
-  if care isn't taken to remember where and how things were made. This process can be
-  made significantly faster with better note taking.
+  This is the place to keep track of thoughts that don't directly relate
+  to the issue in your ticket, the flow of code that you figured out
+  after debugging it a few times, and ideas that came from your sprint kickoff.
+  Consider it a cache for your development process.
+  </p>
+  <p>
+  Catch yourself back up on a project that was sidelined for a month. Lookup the fix
+  for a bug that inexplicably is back in production. Remeber the order of Jupyter Notebooks
+  you need to run to repeat your experiment.
+  </p>
+  <p>
+  All of your ideas in one place.
   </p>
 
