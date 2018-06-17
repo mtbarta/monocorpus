@@ -60,7 +60,9 @@ export default {
         },
         manual: true,
         result (result) {
-          this.noteTitles = Array.from(new Set(result.data.notes.map(note => note.title)))
+          if (result.data.notes) {
+            this.noteTitles = Array.from(new Set(result.data.notes.map(note => note.title)))
+          }
         }
       }
     }

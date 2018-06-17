@@ -13,7 +13,7 @@
     </note-list>
 
     <!-- load more -->
-    <v-layout row justify-center v-if="!$apollo.queries.notes.loading && notes.length == 0">
+    <v-layout row justify-center v-if="!$apollo.queries.notes.loading && notes.length == 0 && tryFetchingNotes == true">
       <v-flex class="text-xs-center pt-3">
         <v-divider class="mb-3"/>
         <v-btn @click="isTriggerFirstLoad = true" v-if="!isTriggerFirstLoad"
@@ -56,7 +56,10 @@ export default  {
     InfiniteLoading
   },
   props: {
-    titleFilter: String
+    titleFilter: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {
@@ -66,11 +69,17 @@ export default  {
       hasMore: true,
       numCallsAfterEmpty: 0, //infinite loading complete() isn't working.
       error: null,
-      isTriggerFirstLoad: false
+      isTriggerFirstLoad: false,
+      tryFetchingNotes: true
     }
   },
   mounted() {
     this.storeInitialFilter(this.noteFilter.copy())
+  },
+  watch: {
+    titleFilter(val, oldval) {
+      console.log(val)
+    }
   },
   apollo: {
       notes: {
@@ -78,7 +87,7 @@ export default  {
         variables () {
           let q = {
             ...this.startingFilter.getNotebookQuery(),
-            title: this.titleFilter
+            title: this.watchedTitleFilter
           }
           return q
         }
@@ -109,6 +118,10 @@ export default  {
         updateQuery: (previousResult, { fetchMoreResult }) => {
           // fetchMoreResult is Object { notes: [...] }
           const newNotes = fetchMoreResult.notes
+          if (!newNotes) {
+            state.complete()
+            return;
+          }
           newNotes.forEach((note) => {
             note.__typename = 'Note'
           })
@@ -131,9 +144,7 @@ export default  {
           
         }
       })
-      // this.noteFilter.from = newFilter.from
       this.updateNoteFilter(newFilter)
-      // 
     }
   },
   computed: {
@@ -143,6 +154,11 @@ export default  {
     ]),
     noteCollection() {
       return new GroupedCollection(this.notes, this.groupingFunc, this.sortingFunc)
+    },
+    watchedTitleFilter() {
+      let v = this.titleFilter.slice(0)
+      console.log(v)
+      return v
     }
   }
 }
