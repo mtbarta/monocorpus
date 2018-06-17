@@ -11,7 +11,7 @@
         
       </v-list-tile>
         
-      <v-list-tile v-for="title in noteTitles" :key="title" dense ripple :to="{name: 'Notebook', params: {titleFilter: title}}">
+      <v-list-tile v-for="title in noteTitles" :key="title" dense ripple :to="{name: 'Notebook', query: {titleFilter: title}}">
         <v-list-tile-action>
           <v-icon> note </v-icon>
         </v-list-tile-action>
