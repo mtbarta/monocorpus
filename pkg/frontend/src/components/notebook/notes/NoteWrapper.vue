@@ -63,9 +63,11 @@ export default {
 }
 </script>
 
-<style scoped>
-.note-wrapper {
-  padding-left: 0px;
-  margin-left: 0px;
+<style>
+ul {
+  padding-left: .5rem;
+}
+li {
+  padding-left: 1rem;
 }
 </style>

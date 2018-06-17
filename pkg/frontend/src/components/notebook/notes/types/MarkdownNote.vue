@@ -140,25 +140,5 @@ export default {
 </script>
 
 <style scoped>
-/* .text-space {
-  border-top: 1px solid;
-} */
-.note {
-  padding: 1px 0 0 5px;
-  background-color:white
-}
-.note-body {
-  padding-top: 5px;
-  min-height: 10%;
-}
-.header {
-  margin: 0px;
-}
-.footer {
-  min-height: 1px;
-}
-.renderedNote {
-  padding-left: 1em;
-}
 
 </style>

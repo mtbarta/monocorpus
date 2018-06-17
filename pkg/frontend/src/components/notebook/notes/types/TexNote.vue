@@ -119,10 +119,10 @@ export default {
 </script>
 
 <style scoped>
-.note {
+/* .note {
   padding: 1px 0 0 5px;
   background-color:white
-}
+} */
 .note-body {
   padding-top: 5px;
   min-height: 10%;
