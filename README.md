@@ -35,17 +35,34 @@ Microservices:
   
 ### Setup
 
-Monocorpus should be installed inside of your $GOPATH.
+Monocorpus should be installed inside of your $GOPATH at `github.com/mtbarta/monocorpus`.
+
+create an .env file in `monocorpus/docker`. It should have the following variables:
+```
+ENV=dev
+NETWORK=docker
+HOST=localhost
+
+POSTGRES_DATA_LOC=/data/postgres
+POSTGRES_USER=loginUserAdmin
+POSTGRES_PASSWORD=adminpw
+
+MONGO_DATA_LOC=/data/mongo
+SEARCH_DATA_LOC=/data/es
+
+KEYCLOAK_USER=admin
+KEYCLOAK_PASSWORD=admin
+
+KEY=INSERT_KEYCLOAK_REALM_PUBLIC_KEY
+```
 
 Deployment requires the gateway to be aware of keycloak's public key for token decryption.
 
 1. `docker-compose up -d keycloak` to bring up the keycloak instance.
-2. Find the notes realm public key and replace the dummy key in the `docker-compose.yaml` file.
+2. Find the notes realm public key and replace the dummy key in the `.env` file.
 3. Elasticsearch saves data to docker/deploy/volumes/es. This directory needs to be writable by elasticsearch. Run `chown -R 1000:1000 es` in the volumes directory to fix this.
 4. Keycloak's realm requires knowledge of valid redirect urls. If you are not running on localhost, this needs to be changed.
 5. `docker-compose up -d` to bring the whole system up.
-
-This process is actively being worked on and should be simplified in the near future.
 
 ## Notable Dependencies
 
