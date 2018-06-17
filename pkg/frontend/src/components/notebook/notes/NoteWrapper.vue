@@ -70,4 +70,7 @@ ul {
 li {
   padding-left: 1rem;
 }
+p {
+  margin-bottom: 0px !important;
+}
 </style>
