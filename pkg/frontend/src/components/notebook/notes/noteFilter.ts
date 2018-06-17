@@ -26,7 +26,7 @@ export default class NoteFilter {
 
   constructor(opts: NoteFilterOptions) {
     this.to = opts.to || moment.utc().unix()
-    this.from = opts.from || moment.utc().startOf('week').unix()
+    this.from = opts.from || moment.utc().startOf('week').subtract(1, 'week').unix()
     this.authors = opts.authors || []
 
     this.title = opts.title ? opts.title.slice(0) : null
