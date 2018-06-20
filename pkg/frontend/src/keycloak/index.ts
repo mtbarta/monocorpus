@@ -1,4 +1,5 @@
-import Keycloak, { KeycloakInstance } from 'keycloak-js'
+import { KeycloakInstance } from 'keycloak-js'
+import * as Keycloak from 'keycloak-js'
 import config from '../../config'
 
 export const keycloakAuth: KeycloakInstance = Keycloak(config.keycloak.options)

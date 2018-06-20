@@ -30,7 +30,7 @@
 
 <script lang='ts'>
 import Note from '../notes/note'
-import moment from 'moment'
+import * as moment from 'moment'
 import {mapState, mapActions} from 'vuex'
 
 export default {

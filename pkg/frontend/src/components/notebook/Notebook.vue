@@ -40,14 +40,13 @@ import NoteFilter from '../notebook/notes/noteFilter'
 import notesQuery from './graphql/getNotes.graphql'
 import GroupedCollection from './notes/lists/groupedCollection'
 import config from '../../../config'
-import { today } from '@/util/dateHelper'
 import { mapActions, mapState, mapGetters } from 'vuex'
 import * as moment from 'moment'
 import { normalizeDate } from '@/util/dateHelper'
 
 import EditMenu from './menu/EditMenu.vue'
 import NoteList from './notes/lists/List.vue'
-import InfiniteLoading from 'vue-infinite-loading'
+import * as InfiniteLoading from 'vue-infinite-loading'
 
 export default  {
   components: {

@@ -1,4 +1,9 @@
-import * as moment from 'moment'
+//somehow this is the only moment import that has a problem.
+let moment = require("moment");
+if ("default" in moment) {
+    moment = moment["default"];
+}
+
 
 const PRETTY_PRINT = 'YYYY-MM-DD'
 const PRETTY_PRINT_WITH_TIME = 'YYYY-MM-DD hh:mm A'

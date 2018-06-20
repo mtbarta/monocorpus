@@ -18,11 +18,6 @@ import MarkdownNote from './types/MarkdownNote.vue'
 import TexNote from './types/TexNote.vue'
 import ArxivNote from './types/ArxivNote.vue'
 import ImageNote from './types/ImageNote.vue'
-// import {
-//   updateNote,
-//   addNote,
-//   deleteNote
-// } from '@/graphql/noteQueries'
 import { mapActions } from 'vuex'
 
 const THROTTLE_MS = 500

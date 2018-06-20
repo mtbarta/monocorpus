@@ -1,4 +1,4 @@
-<<template>
+<template>
   <v-card>
 
     <title-box :title="title"

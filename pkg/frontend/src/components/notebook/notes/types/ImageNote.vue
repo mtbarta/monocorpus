@@ -1,4 +1,4 @@
-<<template>
+<template>
 <!-- <div class="note"> -->  
   <v-card>
       <!-- <v-card-title>
@@ -18,9 +18,6 @@
         <div>
           <input type="file" :disabled="loading" @change="onFilesChange"
             accept="image/*" class="input-file">
-            <!-- <p v-if="isInitial">
-              Drag your file(s) here to begin<br> or click to browse
-            </p> -->
         </div>
       </form>
       <v-card-media v-else>
@@ -36,18 +33,24 @@
         <a v-for="btn in note.buttons" v-bind:class="'btn btn-' + btn.type + ' btn-xs'" v-bind:href="btn.href" v-bind:target="btn.target">{{btn.message}}</a>
     </div> -->
 
-</v-card>
+  </v-card>
 </template>
 
-<script>
+<script lang='ts'>
 
 import TitleBox from './components/Title'
 import {normalizeDate} from '@/util/dateHelper'
 import Note from '@/components/notebook/notes/note'
-import 'viewerjs/dist/viewer.css'
-import Viewer from "v-viewer/src/component.vue"
+import Viewer from "./components/Viewer.vue"
 
+interface FileReaderEventTarget extends EventTarget {
+    result:string
+}
 
+interface FileReaderEvent extends Event {
+    target: FileReaderEventTarget;
+    getMessage():string;
+}
 /**
  * line will be a note object.
  * 
@@ -130,7 +133,7 @@ export default {
 
         const reader = new FileReader()
 
-        reader.onload = (event) => {
+        reader.onload = (event: FileReaderEvent) => {
           n.image = event.target.result
           this.image = event.target.result
         }
@@ -148,6 +151,7 @@ export default {
 </script>
 
 <style scoped>
+@import '/static/viewer.min.css';
 /* .text-space {
   border-top: 1px solid;
 } */

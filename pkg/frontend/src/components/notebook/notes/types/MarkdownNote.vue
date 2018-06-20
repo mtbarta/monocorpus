@@ -1,9 +1,6 @@
-<<template>
+<template>
 <!-- <div class="note"> -->  
   <v-card>
-      <!-- <v-card-title>
-      
-      </v-card-title> -->
     <title-box :title="title"
                  :date="note.dateCreated"
                  :updateTitle="updateTitle" 
@@ -17,6 +14,7 @@
         v-on-clickaway="renderingNote">
 
       <Editor v-if="isEditing && !readOnly"
+        class="editor"
         :code="code"
         :onReady="onMounted"
         :onCodeChange="onCodeChange"
@@ -37,7 +35,7 @@
         <a v-for="btn in note.buttons" v-bind:class="'btn btn-' + btn.type + ' btn-xs'" v-bind:href="btn.href" v-bind:target="btn.target">{{btn.message}}</a>
     </div> -->
 
-</v-card>
+  </v-card>
 </template>
 
 <script>
@@ -86,12 +84,6 @@ export default {
           viewportMargin: 25
         }
       }
-    },
-    watch: {
-      // note () {
-      //   // this.title = this.note.title,
-      //   this.code = this.note.body
-      // }
     },
     props: {
       note: Object,

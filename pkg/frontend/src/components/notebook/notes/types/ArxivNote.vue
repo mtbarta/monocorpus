@@ -1,4 +1,4 @@
-<<template>
+<template>
 <!-- <div class="note"> -->
   <v-card color="" class="">
       <title-box :title="title"
@@ -50,8 +50,8 @@ import Editor from '@/components/notebook/notes/codemirror/editor.vue'
 import TitleBox from './components/Title.vue'
 import { arxivSearch } from './util/arxiv'
 import marked from 'marked'
-import util from 'util'
-import {normalizeDate} from '@/util/dateHelper'
+import * as util from 'util'
+import { normalizeDate } from '@/util/dateHelper'
 import Note from '../note'
 import sanitize from 'sanitize-html'
 
