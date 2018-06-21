@@ -1,6 +1,4 @@
-# fe2
-
-> A Vue.js project
+# frontend
 
 ## Build Setup
 
