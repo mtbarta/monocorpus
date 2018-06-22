@@ -41,9 +41,6 @@ export default {
     props: {
       sidebarClosing: Boolean
     },
-    mounted () {
-      console.log(this.$store)
-    },
     data () {
       return {
         // noteFilter: this.$store.state.notebook.noteFilter,
