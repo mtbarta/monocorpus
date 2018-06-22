@@ -76,18 +76,13 @@ export default  {
   mounted() {
     this.storeInitialFilter(this.noteFilter.copy())
   },
-  watch: {
-    titleFilter(val, oldval) {
-      console.log(val)
-    }
-  },
   apollo: {
       notes: {
         query: notesQuery,
         variables () {
           let q = {
             ...this.startingFilter.getNotebookQuery(),
-            title: this.watchedTitleFilter
+            // title: this.watchedTitleFilter
           }
           return q
         }
@@ -157,7 +152,6 @@ export default  {
     },
     watchedTitleFilter() {
       let v = this.titleFilter.slice(0)
-      console.log(v)
       return v
     }
   }

@@ -14,7 +14,11 @@
           @keyup.enter="saveEdit"
           @blur="saveEdit">
       </v-text-field>
-      <router-link v-if="!editing" tag="a" class="pageLink" :to="{path: '/notebook', query: {titleFilter: title}}">
+      <router-link v-if="!editing" 
+        tag="a" 
+        class="pageLink" 
+        :to="{path: '/notebook', query: {titleFilter: title}}"
+        v-on:click.native="$store.dispatch('notebook/updateNotebookTitleFilter', title)">
           <a>
             <v-icon>filter_list</v-icon>
           </a>
@@ -44,7 +48,6 @@ export default {
   components: {
     DeleteButton
   },
-  // props: ['title', 'updateTitle', 'date', 'readOnly'],
   props: {
     title: String,
     updateTitle: Function,
@@ -53,9 +56,6 @@ export default {
     deleteNote: Function,
     id: String
   },
-  // mounted:function(){
-  //   this.$el.innerText = this.title;
-  // },
   data () {
     return {
       tempValue: this.title,
@@ -87,16 +87,6 @@ export default {
 </script>
 
 <style scoped>
-/* .title {
-  display: inline-block;
-}
-.edit {
-  display: inline-block;
-  margin-left: .25em;
-} */
-/* .titleElement {
-  width: 100%;
-} */
 .note-info {
   font-size: .75rem;
   vertical-align: center;

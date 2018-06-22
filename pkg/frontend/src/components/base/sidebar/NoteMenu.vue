@@ -11,7 +11,12 @@
         
       </v-list-tile>
         
-      <v-list-tile v-for="title in noteTitles" :key="title" dense ripple :to="{name: 'Notebook', query: {titleFilter: title}}">
+      <v-list-tile v-for="title in noteTitles" 
+        :key="title" 
+        dense 
+        ripple 
+        :to="{name: 'Notebook', query: {titleFilter: title}}"
+        v-on:click.native="$store.dispatch('notebook/updateNotebookTitleFilter', title)">
         <v-list-tile-action>
           <v-icon> note </v-icon>
         </v-list-tile-action>
@@ -29,12 +34,15 @@
 import { getNoteTitles, notesTitleQuery } from '@/graphql/noteQueries'
 import TitleFilter from '@/components/notebook/notes/titleFilter'
 import gql from 'graphql-tag'
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'note-menu',
     props: {
       sidebarClosing: Boolean
+    },
+    mounted () {
+      console.log(this.$store)
     },
     data () {
       return {
@@ -47,6 +55,9 @@ export default {
     computed: {
       ...mapGetters('notebook', [
         'noteFilter'
+      ]),
+      ...mapActions('notebook', [
+        'updateNotebookTitleFilter'
       ]),
       titleFilter() {
         return TitleFilter.fromNoteFilter(this.noteFilter)

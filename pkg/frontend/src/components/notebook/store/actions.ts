@@ -11,6 +11,11 @@ export default {
     storeInitialFilter: ({commit}, query) => {
       commit("STORE_INITIAL_FILTER", query)
     },
+    updateNotebookTitleFilter: ({commit}, title) => {
+      //title filter needs to be updated for both filters.
+      commit("UPDATE_NOTEBOOK_TITLE_FILTER", title)
+      commit("UPDATE_NOTE_FILTER_TITLE", {title})
+    },
     addNote: ({commit}, note) => {
       commit("ADD_NOTE", note)
     },

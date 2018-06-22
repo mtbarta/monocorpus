@@ -17,10 +17,13 @@ export default {
     state.noteFilter.authors = emails
   },
   UPDATE_NOTE_FILTER_TEAM(state:any, team: string) {
-    return state.noteFilter.team = team
+    state.noteFilter.team = team
   },
   STORE_INITIAL_FILTER(state:any, query:any) {
-    return state.startingFilter = query
+    state.startingFilter = query
+  },
+  UPDATE_NOTEBOOK_TITLE_FILTER(state:any, title: string) {
+    state.startingFilter.title = title
   },
   ADD_NOTE(state: any, note:Note) {
     graphClient.mutate({
