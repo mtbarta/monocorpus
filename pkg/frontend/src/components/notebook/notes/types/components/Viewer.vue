@@ -5,7 +5,7 @@
   </div>
 </template>
 <script lang='ts'>
-import * as Viewer from 'viewerjs'
+import Viewer from 'viewerjs'
 
 export default {
   props: {
