@@ -1,5 +1,4 @@
-import noteFilter from '@/components/notebook/notes/noteFilter.ts'
-import * as moment from 'moment'
+import noteFilter from '@/components/notes/noteFilter.ts'
 
 describe('NoteFilter.test.js', () => {
   it('creates a copy on get', () => {

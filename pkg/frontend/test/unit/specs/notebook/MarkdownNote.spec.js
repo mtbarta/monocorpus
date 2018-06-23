@@ -1,81 +1,55 @@
-import Vue from 'vue'
-
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
-import Note from '@/components/notebook/notes/note.ts'
-import MarkdownNote from '@/components/notebook/notes/types/MarkdownNote.vue'
+import { shallowMount, mount } from '@vue/test-utils'
+import Note from '@/components/notes/note.ts'
+import MarkdownNote from '@/components/notes/MarkdownNote.vue'
 import * as moment from 'moment'
-import Editor from '@/components/notebook/notes/codemirror/editor.vue'
+import Editor from '@/components/notes/components/codemirror/editor.vue'
+import TitleBox from '@/components/notes/components/Title.vue'
+import Vuetify from 'vuetify'
+import { createLocalVue } from '@vue/test-utils'
 
-const localVue = createLocalVue();
-
-describe('Notebook.test.js', () => {
+describe('MarkdownNote.test.js', () => {
   let cmp
   let note
+  let localVue
 
   beforeEach(() => {
-    cmp = shallowMount(MarkdownNote, { // Create a shallow instance of the component
+    localVue = createLocalVue()
+    localVue.use(Vuetify)
+
+    cmp = mount(MarkdownNote, { // Create a shallow instance of the component
       propsData: {
         note: new Note({
           dateCreated: moment.utc('2018-01-01'),
-          body: 'hello'
+          body: 'hello',
+          title: 'test'
         }),
         updateNote: jest.fn(),
         deleteNote: jest.fn()
       },
       stubs: {
-        Editor: '<div class="editor" />'
+        Editor: '<div class="editor" />',
+        TitleBox: '<div class="title" />'
       },
       sync: false,
       attachToDocument: true,
-      localVue
+      localVue: localVue
     })
   })
 
-  it('onCodeChange creates a copy', () => {
-    // Within cmp.vm, we can access all Vue instance methods
-    const oldNote = cmp.vm.note
-    cmp.vm.onCodeChange('test')
-
-    let fnNote = cmp.vm.updateNote.mock.calls[0][0]
-
-    expect(fnNote).not.toBe(oldNote)
-  })
-
-  it('updates the note body', () => {
-    // Within cmp.vm, we can access all Vue instance methods
-    cmp.vm.onCodeChange('test')
-
-    let fnNote = cmp.vm.updateNote.mock.calls[0][0]
-
-    expect(fnNote.body).toBe('test')
-  })
-
-  it('updateTitle creates a copy', () => {
-    cmp.vm.updateTitle('test')
-
-    let fnNote = cmp.vm.updateNote.mock.calls[0][0]
-
-    expect(fnNote).not.toBe(note)
-  })
-
-  it('updates the note title', () => {
-    cmp.vm.updateTitle('test')
-
-    let fnNote = cmp.vm.updateNote.mock.calls[0][0]
-
-    expect(fnNote.title).toBe('test')
-  })
-
-  it('renders the editor', () => {
+  it('renders the editor', (done) => {
     cmp.setData({
-      isEditing: false,
+      isEditing: true,
     })
     cmp.setProps({
       readOnly: false
     })
     cmp.find('div.text-space').trigger('click')
     expect(cmp.vm.isEditing).toBe(true)
-    expect(cmp.html()).toContain('editor')
+    cmp.find('div.text-space').trigger('focus')
+    cmp.vm.$nextTick(() => {
+      expect(cmp.html()).toContain('editor')
+      done()
+    })
   })
 
   it('renders the html div', () => {
@@ -98,5 +72,7 @@ describe('Notebook.test.js', () => {
       readOnly: true
     })
 
-    expect(cmp.html()).toContain('<div class="renderedNote"')  })
+    expect(cmp.html()).toContain('<div class="renderedNote"')  
+  })
+
 })

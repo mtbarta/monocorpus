@@ -4,6 +4,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
-    "allowSyntheticDefaultImports": false,
+    "allowSyntheticDefaultImports": false
   }
 }
