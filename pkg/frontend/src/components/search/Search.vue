@@ -22,9 +22,9 @@
 </template>
 
 <script lang='ts'>
-import NoteList from '@/components/notebook/notes/lists/List.vue'
+import NoteList from '@/components/lists/List.vue'
 import { Component, Emit, Inject, Model, Prop, Provide, Vue, Watch } from 'vue-property-decorator'
-import { searchQuery } from '@/graphql/noteQueries'
+import searchQuery from '@/graphql/searchNotes.graphql'
 
 
 export default {

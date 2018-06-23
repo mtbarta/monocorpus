@@ -1,4 +1,4 @@
-import Note from '../note'
+import Note from '@/components/notes/note'
 
 export default class NamedCollection {
   title: string|number

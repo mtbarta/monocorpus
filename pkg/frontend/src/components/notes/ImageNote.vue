@@ -39,8 +39,7 @@
 <script lang='ts'>
 
 import TitleBox from './components/Title'
-import {normalizeDate} from '@/util/dateHelper'
-import Note from '@/components/notebook/notes/note'
+import Note from './note'
 import Viewer from "./components/Viewer.vue"
 
 interface FileReaderEventTarget extends EventTarget {
@@ -89,12 +88,6 @@ export default {
         }
       }
     },
-    watch: {
-      // note () {
-      //   // this.title = this.note.title,
-      //   this.code = this.note.body
-      // }
-    },
     props: {
       note: Object,
       updateNote: Function,
@@ -105,7 +98,6 @@ export default {
       deleteNote: Function
     },
     methods: {
-
       onFocus(cm) {
         // console.log("focus")
       },
@@ -114,9 +106,6 @@ export default {
         let n = new Note(this.note)
         n.title = title
         this.updateNote(n)
-      },
-      formatDate(date) {
-        return normalizeDate(date)
       },
       async onFilesChange(e) {
         const n = new Note(this.note)

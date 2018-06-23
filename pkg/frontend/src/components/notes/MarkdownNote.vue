@@ -42,11 +42,10 @@
 require("codemirror/mode/markdown/markdown")
 
 import { mixin as clickaway } from 'vue-clickaway';
-import Editor from '@/components/notebook/notes/codemirror/editor.vue'
+import Editor from './components/codemirror/editor.vue'
 import TitleBox from './components/Title'
 import marked from 'marked';
-import {normalizeDate} from '@/util/dateHelper'
-import Note from '@/components/notebook/notes/note'
+import Note from './note'
 import sanitize from 'sanitize-html'
 
 marked.setOptions({
@@ -122,9 +121,6 @@ export default {
       },
       renderCode(string) {
         return marked(string)
-      },
-      formatDate(date) {
-        return normalizeDate(date)
       }
       
     }

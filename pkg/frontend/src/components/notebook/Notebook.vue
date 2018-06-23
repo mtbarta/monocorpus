@@ -36,17 +36,18 @@
 
 <script lang='ts'>
 import { Component, Emit, Inject, Model, Prop, Provide, Vue, Watch } from 'vue-property-decorator'
-import NoteFilter from '../notebook/notes/noteFilter'
+import NoteFilter from '@/components/notes/noteFilter'
 import notesQuery from './graphql/getNotes.graphql'
-import GroupedCollection from './notes/lists/groupedCollection'
+import GroupedCollection from '@/components/lists/groupedCollection'
 import config from '../../../config'
 import { mapActions, mapState, mapGetters } from 'vuex'
 import * as moment from 'moment'
 import { normalizeDate } from '@/util/dateHelper'
 
 import EditMenu from './menu/EditMenu.vue'
-import NoteList from './notes/lists/List.vue'
+import NoteList from '@/components/lists/List.vue'
 import * as InfiniteLoading from 'vue-infinite-loading'
+import Gettable from './mixins/gettable'
 
 export default  {
   components: {
@@ -60,91 +61,35 @@ export default  {
       default: ''
     }
   },
+  mixins: [
+    Gettable
+  ],
   data () {
     return {
       supportedNotes: config.notebook.supportedNotes,
       notes: [],
       skipUpdates: false,
-      hasMore: true,
-      numCallsAfterEmpty: 0, //infinite loading complete() isn't working.
       error: null,
       isTriggerFirstLoad: false,
       tryFetchingNotes: true
     }
-  },
-  mounted() {
-    this.storeInitialFilter(this.noteFilter.copy())
-  },
-  apollo: {
-      notes: {
-        query: notesQuery,
-        variables () {
-          let q = {
-            ...this.startingFilter.getNotebookQuery(),
-            // title: this.watchedTitleFilter
-          }
-          return q
-        }
-      }
   },
   methods: {
     ...mapActions('notebook', [
       'updateNoteFilter',
       'updateNoteFilterTitle',
       'updateNoteFilterAuthors',
-      'storeInitialFilter'
     ]),
     sortingFunc: (a: any, b: any) => {
-      // this func is done on the keys, which are formatted date strings.
       return moment.utc(b).unix() - moment.utc(a).unix()
     },
     groupingFunc: ({dateCreated}) => {
       return normalizeDate(dateCreated)
     },
-    /**
-     * this is how vue-apollo says to fetch more from a query.
-     */
-    fetchOlderNotes(state) {
-      const newFilter = this.noteFilter.fetchOlderNotesQuery(2, 'weeks')
-
-      this.$apollo.queries.notes.fetchMore({
-        variables: newFilter,
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          // fetchMoreResult is Object { notes: [...] }
-          const newNotes = fetchMoreResult.notes
-          if (!newNotes) {
-            state.complete()
-            return;
-          }
-          newNotes.forEach((note) => {
-            note.__typename = 'Note'
-          })
-
-          if (newNotes.length == 0) {
-            state.complete()
-            this.hasMore = false
-            this.numCallsAfterEmpty += 1
-          } 
-          else {
-            state.loaded()
-            return {
-              notes: [
-                ...previousResult.notes, 
-                ...newNotes
-              ]
-            }
-          }
-
-          
-        }
-      })
-      this.updateNoteFilter(newFilter)
-    }
   },
   computed: {
     ...mapGetters('notebook', [
-      'noteFilter',
-      'startingFilter'
+      'noteFilter'
     ]),
     noteCollection() {
       return new GroupedCollection(this.notes, this.groupingFunc, this.sortingFunc)

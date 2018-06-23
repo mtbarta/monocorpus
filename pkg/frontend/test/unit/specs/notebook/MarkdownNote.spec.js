@@ -22,6 +22,9 @@ describe('Notebook.test.js', () => {
         updateNote: jest.fn(),
         deleteNote: jest.fn()
       },
+      stubs: {
+        Editor: '<div class="editor" />'
+      },
       sync: false,
       attachToDocument: true,
       localVue
@@ -63,16 +66,17 @@ describe('Notebook.test.js', () => {
     expect(fnNote.title).toBe('test')
   })
 
-  // it('renders the editor', () => {
-  //   cmp.setData({
-  //     isEditing: true,
-  //   })
-  //   cmp.setProps({
-  //     readOnly: false
-  //   })
-  //   cmp.find('div.text-space').trigger('click')
-  //   expect(cmp.html()).toContain('editor')
-  // })
+  it('renders the editor', () => {
+    cmp.setData({
+      isEditing: false,
+    })
+    cmp.setProps({
+      readOnly: false
+    })
+    cmp.find('div.text-space').trigger('click')
+    expect(cmp.vm.isEditing).toBe(true)
+    expect(cmp.html()).toContain('editor')
+  })
 
   it('renders the html div', () => {
     cmp.setData({

@@ -2,23 +2,25 @@
   <v-container class="note-wrapper">
 
     <markdown-note :note="note" v-if="type=='markdown'" 
-      :updateNote="update" :readOnly="readOnly" :deleteNote="del"/>
+      :updateNote="updateNote" :readOnly="readOnly" :deleteNote="deleteNote"/>
     <tex-note :note="note" v-if="type=='tex'" 
-      :updateNote="update" :readOnly="readOnly" :deleteNote="del"/>
+      :updateNote="updateNote" :readOnly="readOnly" :deleteNote="deleteNote"/>
     <arxiv-note :note="note" v-if="type=='arxiv'" 
-      :updateNote="update" :readOnly="readOnly" :deleteNote="del"/>
+      :updateNote="updateNote" :readOnly="readOnly" :deleteNote="deleteNote"/>
     <image-note :note="note" v-if="type=='image'" 
-      :updateNote="update" :readOnly="readOnly" :deleteNote="del"/>
+      :updateNote="updateNote" :readOnly="readOnly" :deleteNote="deleteNote"/>
   </v-container>
 </template>
 
 <script lang="ts">
 import debounce from 'lodash.debounce'
-import MarkdownNote from './types/MarkdownNote.vue'
-import TexNote from './types/TexNote.vue'
-import ArxivNote from './types/ArxivNote.vue'
-import ImageNote from './types/ImageNote.vue'
+import MarkdownNote from './MarkdownNote.vue'
+import TexNote from './TexNote.vue'
+import ArxivNote from './ArxivNote.vue'
+import ImageNote from './ImageNote.vue'
 import { mapActions } from 'vuex'
+import DeleteMixin from '@/components/notebook/mixins/deletable'
+import UpdateMixin from '@/components/notebook/mixins/updatable'
 
 const THROTTLE_MS = 500
 
@@ -38,23 +40,10 @@ export default {
       default: false
     }
   },
-  data () {
-    return {
-      THROTTLE_MS: THROTTLE_MS
-    }
-  },
-  methods: {
-    ...mapActions('notebook', [
-      'updateNote',
-      'deleteNote'
-    ]),
-    del (id) {
-      this.deleteNote(id);
-    },
-    update: debounce(function(note) {
-      this.updateNote(note)
-    }, THROTTLE_MS)
-  },
+  mixins: [
+    DeleteMixin,
+    UpdateMixin
+  ]
 }
 </script>
 

@@ -18,7 +18,7 @@
                 Image
               </v-btn>
             </v-btn-toggle>
-            <v-btn color="primary" v-on:click="add(pseudoNote.prototype())">
+            <v-btn color="primary" v-on:click="addNote(pseudoNote.prototype())">
                 <v-icon>add</v-icon>
                 Note
               </v-btn>
@@ -29,9 +29,8 @@
 </template>
 
 <script lang='ts'>
-import Note from '../notes/note'
-import * as moment from 'moment'
-import {mapState, mapActions} from 'vuex'
+import Note from '@/components/notes/note'
+import AddNoteMixin from '../mixins/addable'
 
 export default {
   props: {
@@ -41,6 +40,9 @@ export default {
      default: 'Untitled'
    }
   },
+  mixins: [
+    AddNoteMixin
+  ],
   watch : {
       defaultTitle () {
         this.pseudoNote.title = this.defaultTitle
@@ -55,29 +57,9 @@ export default {
       noteType: 'markdown',
       pseudoNote: new Note({
           title: this.defaultTitle,
-          type: 'markdown',
-          author: this.email,
-          // team: this.$keycloak.user.
+          type: 'markdown'
         })
     }
-  },
-  methods: {
-    ...mapActions('notebook', [
-      'addNote'
-    ]),
-    add (note) {
-      // hack. i'm not sure why this isn't on construction, and/or updated.
-      note.author = this.email
-
-      let mutation = this.addNote(note)
-    }
-  },
-  computed: {
-    ...mapState({
-      email(state: any) {
-        return state.login.email
-      }
-    })
   }
 }
 </script>

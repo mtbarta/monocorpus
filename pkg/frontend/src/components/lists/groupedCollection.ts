@@ -1,5 +1,5 @@
 import NamedCollection from './namedCollection'
-import Note from '../note'
+import Note from '@/components/notes/note'
 import groupBy from 'lodash.groupby'
 import { today } from '@/util/dateHelper'
 

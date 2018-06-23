@@ -1,4 +1,4 @@
-import { NoteOptions, default as Note } from './note'
+import { NoteOptions } from './note'
 import * as moment from 'moment'
 
 class NoteFilterOptions extends NoteOptions {
@@ -53,6 +53,16 @@ export default class NoteFilter {
     const {to,id, ...rest} = JSON.parse(str)
 
     return rest;
+  }
+
+  public getTitleQuery () {
+    const {from, authors, team, type} = this
+    return {
+      from,
+      authors,
+      team,
+      type
+    }
   }
 
   public fetchOlderNotesQuery(amount:any, duration:string): NoteFilter {
