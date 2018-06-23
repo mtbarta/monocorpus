@@ -1,6 +1,5 @@
-import NoteFilter from '../notes/noteFilter'
+import NoteFilter from '@/components/notes/noteFilter'
 
 export default {
-  noteFilter: new NoteFilter({}),
-  startingFilter: new NoteFilter({})
+  noteFilter: new NoteFilter({})
 }

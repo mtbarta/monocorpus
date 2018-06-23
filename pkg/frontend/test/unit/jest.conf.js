@@ -5,14 +5,18 @@ module.exports = {
   moduleFileExtensions: [
     'js',
     'json',
-    'vue'
+    'vue',
+    'ts'
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
   transform: {
+    "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest",
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
-    '.*\\.(vue)$': '<rootDir>/node_modules/vue-jest'
+    '.*\\.(vue)$': '<rootDir>/node_modules/jest-vue-preprocessor',
+    "\\.(gql|graphql)$": "<rootDir>/node_modules/jest-transform-graphql",
+    "\\.css": "<rootDir>/node_modules/css-loader"
   },
   testPathIgnorePatterns: [
     '<rootDir>/test/e2e'
@@ -26,5 +30,11 @@ module.exports = {
     '!src/main.js',
     '!src/router/index.js',
     '!**/node_modules/**'
-  ]
+  ],
+  globals: {
+    'ts-jest': {
+      useBabelrc: true,
+      tsConfigFile: './tsconfig.jest.json'
+    },
+  }
 }

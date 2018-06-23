@@ -1,4 +1,4 @@
-<<template>
+<template>
   <v-toolbar flat dense class="titleElement">
     
     <v-toolbar-title>
@@ -18,7 +18,7 @@
         tag="a" 
         class="pageLink" 
         :to="{path: '/notebook', query: {titleFilter: title}}"
-        v-on:click.native="$store.dispatch('notebook/updateNotebookTitleFilter', title)">
+        v-on:click.native="$store.dispatch('notebook/updateNoteFilterTitle', title)">
           <a>
             <v-icon>filter_list</v-icon>
           </a>

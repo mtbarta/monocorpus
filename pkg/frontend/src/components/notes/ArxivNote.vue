@@ -1,4 +1,4 @@
-<<template>
+<template>
 <!-- <div class="note"> -->
   <v-card color="" class="">
       <title-box :title="title"
@@ -36,9 +36,9 @@
 
       </div>
     </v-card-text>
-    <div class="footer">
+    <!-- <div class="footer">
         <a v-for="btn in note.buttons" v-bind:class="'btn btn-' + btn.type + ' btn-xs'" v-bind:href="btn.href" v-bind:target="btn.target">{{btn.message}}</a>
-    </div>
+    </div> -->
 
 <!-- </div> -->
 </v-card>
@@ -46,13 +46,12 @@
 
 <script lang='ts'>
 import { mixin as clickaway } from 'vue-clickaway';
-import Editor from '@/components/notebook/notes/codemirror/editor.vue'
+import Editor from './components/codemirror/editor.vue'
 import TitleBox from './components/Title.vue'
-import { arxivSearch } from './util/arxiv'
+import { arxivSearch } from './arxiv'
 import marked from 'marked'
-import util from 'util'
-import {normalizeDate} from '@/util/dateHelper'
-import Note from '../note'
+import * as util from 'util'
+import Note from './note'
 import sanitize from 'sanitize-html'
 
 marked.setOptions({
@@ -101,11 +100,6 @@ export default {
     },
     props: ['note', 'updateNote', 'deleteNote', 'readOnly'],
     asyncComputed: {
-      // async arxivArticle () {
-      //   const article = await getArxivInfo();
-
-      //   return formatArxivArticle(article);
-      // },
       async retrieveArxivArticle() {
         if (this.link == null || this.link == '') {
           return null
@@ -158,9 +152,6 @@ export default {
       },
       renderingNote() {
         this.isEditing = false
-      },
-      formatDate(date) {
-        return normalizeDate(date)
       },
       renderCode(code) {
         return sanitize(marked(code))

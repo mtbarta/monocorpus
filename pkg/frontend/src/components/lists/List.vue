@@ -15,8 +15,8 @@
 <script lang='ts'>
 import { Component, Emit, Inject, Model, Prop, Provide, Vue, Watch } from 'vue-property-decorator'
 
-import NoteWrapper from '../NoteWrapper.vue'
-import Note from '../note'
+import NoteWrapper from '@/components/notes/NoteWrapper.vue'
+import Note from '@/components/notes/note'
 
 @Component({
   components: {

@@ -16,7 +16,7 @@
         dense 
         ripple 
         :to="{name: 'Notebook', query: {titleFilter: title}}"
-        v-on:click.native="$store.dispatch('notebook/updateNotebookTitleFilter', title)">
+        v-on:click.native="$store.dispatch('notebook/updateNoteFilterTitle', title)">
         <v-list-tile-action>
           <v-icon> note </v-icon>
         </v-list-tile-action>
@@ -31,10 +31,8 @@
 </template>
 
 <script lang='ts'>
-import { getNoteTitles, notesTitleQuery } from '@/graphql/noteQueries'
-import TitleFilter from '@/components/notebook/notes/titleFilter'
-import gql from 'graphql-tag'
 import { mapState, mapGetters, mapActions } from 'vuex'
+import titleQuery from '@/graphql/noteTitles.graphql'
 
 export default {
     name: 'note-menu',
@@ -43,7 +41,6 @@ export default {
     },
     data () {
       return {
-        // noteFilter: this.$store.state.notebook.noteFilter,
         noteTitles: [],
         active: false,
         menuOpen: false
@@ -57,12 +54,12 @@ export default {
         'updateNotebookTitleFilter'
       ]),
       titleFilter() {
-        return TitleFilter.fromNoteFilter(this.noteFilter)
+        return this.noteFilter.getTitleQuery()
       }
     },
     apollo: {
       titles: {
-        query: notesTitleQuery,
+        query: titleQuery,
         variables () {
           return this.titleFilter
         },

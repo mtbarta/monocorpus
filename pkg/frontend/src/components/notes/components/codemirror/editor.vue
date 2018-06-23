@@ -13,7 +13,7 @@
 import { codemirror } from 'vue-codemirror'
 
 // require styles
-require('codemirror/lib/codemirror.css')
+// require('codemirror/lib/codemirror.css')
 // require('./codemirror.css')
 
 // require more codemirror resource...
@@ -48,6 +48,6 @@ export default {
 
 <style scope>
 /* @import 'codemirror/lib/codemirror.css'; */
-/* @import './codemirror.css'; */
+@import '/static/codemirror.css';
 
 </style>

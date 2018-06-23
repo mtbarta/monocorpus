@@ -1,0 +1,11 @@
+query GetNotes($query: String, $to: Float, $from:Float, $authors: [String], $team: String) {
+  search(query: $query, todate: $to, fromdate: $from, authors: $authors, team: $team) {
+    id,
+    title,
+    body,
+    dateCreated,
+    author,
+    team,
+    type
+  }
+}

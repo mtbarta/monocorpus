@@ -1,9 +1,6 @@
-<<template>
+<template>
 <!-- <div class="note"> -->  
   <v-card>
-      <!-- <v-card-title>
-      
-      </v-card-title> -->
     <title-box :title="title"
                  :date="note.dateCreated"
                  :updateTitle="updateTitle" 
@@ -17,6 +14,7 @@
         v-on-clickaway="renderingNote">
 
       <Editor v-if="isEditing && !readOnly"
+        class="editor"
         :code="code"
         :onReady="onMounted"
         :onCodeChange="onCodeChange"
@@ -37,18 +35,17 @@
         <a v-for="btn in note.buttons" v-bind:class="'btn btn-' + btn.type + ' btn-xs'" v-bind:href="btn.href" v-bind:target="btn.target">{{btn.message}}</a>
     </div> -->
 
-</v-card>
+  </v-card>
 </template>
 
 <script>
 require("codemirror/mode/markdown/markdown")
 
 import { mixin as clickaway } from 'vue-clickaway';
-import Editor from '@/components/notebook/notes/codemirror/editor.vue'
+import Editor from './components/codemirror/editor.vue'
 import TitleBox from './components/Title'
 import marked from 'marked';
-import {normalizeDate} from '@/util/dateHelper'
-import Note from '@/components/notebook/notes/note'
+import Note from './note'
 import sanitize from 'sanitize-html'
 
 marked.setOptions({
@@ -87,12 +84,6 @@ export default {
         }
       }
     },
-    watch: {
-      // note () {
-      //   // this.title = this.note.title,
-      //   this.code = this.note.body
-      // }
-    },
     props: {
       note: Object,
       updateNote: Function,
@@ -130,9 +121,6 @@ export default {
       },
       renderCode(string) {
         return marked(string)
-      },
-      formatDate(date) {
-        return normalizeDate(date)
       }
       
     }
