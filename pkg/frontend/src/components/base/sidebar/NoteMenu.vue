@@ -16,7 +16,7 @@
         dense 
         ripple 
         :to="{name: 'Notebook', query: {titleFilter: title}}"
-        v-on:click.native="$store.dispatch('notebook/updateNoteFilterTitle', title)">
+      >
         <v-list-tile-action>
           <v-icon> note </v-icon>
         </v-list-tile-action>

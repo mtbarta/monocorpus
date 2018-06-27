@@ -74,6 +74,11 @@ export default  {
       tryFetchingNotes: true
     }
   },
+  watch: {
+    titleFilter (val, oldVal) {
+      this.updateNoteFilterTitle(val)
+    }
+  },
   methods: {
     ...mapActions('notebook', [
       'updateNoteFilter',
@@ -93,10 +98,6 @@ export default  {
     ]),
     noteCollection() {
       return new GroupedCollection(this.notes, this.groupingFunc, this.sortingFunc)
-    },
-    watchedTitleFilter() {
-      let v = this.titleFilter.slice(0)
-      return v
     }
   }
 }
