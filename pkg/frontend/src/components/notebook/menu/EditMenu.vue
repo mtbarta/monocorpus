@@ -56,9 +56,9 @@ export default {
     return {
       noteType: 'markdown',
       pseudoNote: new Note({
-          title: this.defaultTitle,
-          type: 'markdown'
-        })
+        title: this.defaultTitle || 'Untitled',
+        type: 'markdown'
+      })
     }
   }
 }
