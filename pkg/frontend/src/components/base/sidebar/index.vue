@@ -11,11 +11,9 @@
 
     <user-menu />
     
-    <v-list>
-      <notebook-link/>
-      <!-- <v-divider></v-divider> -->
-      <note-menu :sidebarClosing="value"/>
-    </v-list>
+    <notebook-link/>
+
+    <note-menu />
 
     <v-spacer /> 
     

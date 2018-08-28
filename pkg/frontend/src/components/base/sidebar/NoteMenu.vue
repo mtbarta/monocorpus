@@ -1,49 +1,52 @@
-<<template>
-  <v-list>
-    <v-list-group v-model="menuOpen">
-      <v-list-tile slot="activator">
-        <v-list-tile-action>
-          <v-icon>collections_bookmark </v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <span>Notes</span>
-        </v-list-tile-content>
-        
-      </v-list-tile>
-        
-      <v-list-tile v-for="title in noteTitles" 
-        :key="title" 
-        dense 
-        ripple 
-        :to="{name: 'Notebook', query: {titleFilter: title}}"
-      >
-        <v-list-tile-action>
-          <v-icon> note </v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <!-- <router-link class="pageLink" :to="{path: '/notebook', query: {titleFilter: title}}"> -->
-             {{title}}
-          <!-- </router-link> -->
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list-group>
+<template>
+  <v-list
+    v-on-clickaway="resetActive"
+  >
+    <v-subheader> Notes </v-subheader>
+        <v-list-tile v-for="item in noteTitles" 
+            :key="item.index" 
+            dense 
+            ripple
+            @click="navclick(item)"
+            :value="item.index == activeIndex"
+        >
+          <v-list-tile-action>
+            <v-icon> note </v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+              {{item.title}}
+          </v-list-tile-content>
+        </v-list-tile>
   </v-list>
 </template>
 
 <script lang='ts'>
 import { mapState, mapGetters, mapActions } from 'vuex'
 import titleQuery from '@/graphql/noteTitles.graphql'
+import { mixin as clickaway } from 'vue-clickaway';
 
 export default {
     name: 'note-menu',
     props: {
       sidebarClosing: Boolean
     },
+    mixins: [
+      clickaway
+    ],
     data () {
       return {
         noteTitles: [],
-        active: false,
-        menuOpen: false
+        menuOpen: false,
+        active: -1
+      }
+    },
+    methods: {
+      navclick(item) {
+        this.active = item.index
+        this.$router.push({name: 'Notebook', query: {titleFilter: item.title}})
+      },
+      resetActive() {
+        this.active = -1
       }
     },
     computed: {
@@ -55,6 +58,9 @@ export default {
       ]),
       titleFilter() {
         return this.noteFilter.getTitleQuery()
+      },
+      activeIndex() {
+        return this.active
       }
     },
     apollo: {
@@ -66,7 +72,14 @@ export default {
         manual: true,
         result (result) {
           if (result.data.notes) {
-            this.noteTitles = Array.from(new Set(result.data.notes.map(note => note.title)))
+            this.noteTitles = Array.from(
+              new Set(result.data.notes.map((note, index) => {
+                return {
+                  index: index,
+                  title: note.title,
+                  active: false
+                }
+              })))
           }
         }
       }
