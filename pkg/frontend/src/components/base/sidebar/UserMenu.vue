@@ -1,4 +1,4 @@
-<<template>
+<template>
   <v-list>
       <v-list-tile avatar>
         <v-list-tile-avatar color='blue'>
