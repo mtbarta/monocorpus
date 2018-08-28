@@ -75,7 +75,6 @@ export default Vue.extend({
         }
       })
 
-      console.log(out)
       return out
     }
   }
