@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import ComponentOptions from 'vue-apollo'
 
 export default Vue.extend({
     name: 'editable',

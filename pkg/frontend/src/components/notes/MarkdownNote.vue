@@ -29,12 +29,6 @@
 
       </div>
     </v-card-text>
-    <!-- <div class="footer">
-        <a v-for="btn in note.buttons" v-bind:class="'btn btn-' + btn.type + ' btn-xs'" v-bind:href="btn.href" v-bind:target="btn.target">{{btn.message}}</a>
-    </div><div class="footer">
-        <a v-for="btn in note.buttons" v-bind:class="'btn btn-' + btn.type + ' btn-xs'" v-bind:href="btn.href" v-bind:target="btn.target">{{btn.message}}</a>
-    </div> -->
-
   </v-card>
 </template>
 
@@ -44,15 +38,10 @@ require("codemirror/mode/markdown/markdown")
 import { mixin as clickaway } from 'vue-clickaway';
 import Editor from './components/codemirror/editor.vue'
 import TitleBox from './components/Title'
-import marked from 'marked';
 import Note from './note'
-import sanitize from 'sanitize-html'
+import markdownable from './mixins/markdownable'
+import editable from './mixins/editable'
 
-marked.setOptions({
-  gfm: true,
-  smartLists: true,
-  breaks: true
-})
 /**
  * line will be a note object.
  * 
@@ -60,16 +49,19 @@ marked.setOptions({
  */
 export default {
     name: 'MarkdownNote',
-    mixins: [ clickaway ],
+    mixins: [ 
+      clickaway,
+      markdownable,
+      editable
+    ],
     components: {
       Editor,
-      TitleBox
+      TitleBox,
     },
     data () {
       return {
         code: this.note.body,
         title: this.note.title,
-        isEditing: false,
         editorOptions: {
           height: 'auto',
           tabSize: 4,
@@ -112,21 +104,14 @@ export default {
         let n = new Note(this.note)
         n.title = title
         this.updateNote(n)
-      },
-      editingNote() {
-        this.isEditing = true
-      },
-      renderingNote() {
-        this.isEditing = false
-      },
-      renderCode(string) {
-        return marked(string)
-      }
-      
+      },  
     }
   }
 </script>
 
 <style scoped>
-
+  .markdown .inline-katex .katex {
+    display: inline;
+    text-align: initial;
+  }
 </style>
