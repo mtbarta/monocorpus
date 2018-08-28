@@ -18,12 +18,12 @@ export default Vue.extend({
 
     created () {
       this.updateNote = debounce(function(note) {
-        this.__updateNote(note)
-      }, this.debounceTime)
+        this._updateNote(note)
+      }, this.debounceTime).bind(this)
     },
 
     methods: {
-      __updateNote(note) {
+      _updateNote(note) {
         this.$apollo.mutate({
           mutation: updateNote,
           variables: note,
