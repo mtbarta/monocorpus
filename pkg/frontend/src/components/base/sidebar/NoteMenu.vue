@@ -3,8 +3,9 @@
     v-on-clickaway="resetActive"
   >
     <v-subheader> Notes </v-subheader>
-        <v-list-tile v-for="item in noteTitles" 
+        <v-list-tile v-for="item in uniqueTitles" 
             :key="item.index" 
+            class="note-menu-title"
             dense 
             ripple
             @click="navclick(item)"
@@ -35,7 +36,7 @@ export default {
     ],
     data () {
       return {
-        noteTitles: [],
+        titles: [],
         menuOpen: false,
         active: -1
       }
@@ -61,6 +62,16 @@ export default {
       },
       activeIndex() {
         return this.active
+      },
+      uniqueTitles() {
+        return this.titles.map((title, index) => {
+              return {
+                  index: index,
+                  title: title,
+                  active: false
+                }
+              }
+            )
       }
     },
     apollo: {
@@ -72,13 +83,9 @@ export default {
         manual: true,
         result (result) {
           if (result.data.notes) {
-            this.noteTitles = Array.from(
+            this.titles = Array.from(
               new Set(result.data.notes.map((note, index) => {
-                return {
-                  index: index,
-                  title: note.title,
-                  active: false
-                }
+                return note.title
               })))
           }
         }
