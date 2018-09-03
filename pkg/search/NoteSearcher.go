@@ -4,16 +4,13 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/mtbarta/monocorpus/pkg/notes/util"
-	"github.com/mtbarta/monocorpus/pkg/notes/types"
+	notes "github.com/mtbarta/monocorpus/pkg/notes"
+	"gitlab.com/team-notes/notes/pkg/types"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/olivere/elastic"
 	blackfriday "gopkg.in/russross/blackfriday.v2"
 )
-
-var klogger = util.CreateNewLogFmtLogger()
-var jsonLogger = util.CreateNewJSONLogger()
 
 const mapping = `
 {
@@ -108,7 +105,6 @@ func (s *NoteSearcher) EnsureIndex() (bool, error) {
 		createIndex, err := s.Client.CreateIndex(s.index).BodyString(mapping).Do(ctx)
 		if err != nil {
 			// Handle error
-			klogger.Log("error", err.Error)
 			panic(err)
 		}
 		if !createIndex.Acknowledged {
@@ -119,13 +115,12 @@ func (s *NoteSearcher) EnsureIndex() (bool, error) {
 	return exists, err
 }
 
-func (s *NoteSearcher) Put(note *types.Note, ctx context.Context) error {
+func (s *NoteSearcher) Put(note *notes.Note, ctx context.Context) error {
 	cleanInput := blackfriday.Run([]byte(note.Body))
 	cleanInput = bluemonday.UGCPolicy().SanitizeBytes(cleanInput)
 
 	cleanTitle := bluemonday.UGCPolicy().Sanitize(note.Title)
-	klogger.Log("content", cleanInput)
-	indexableNote := types.Note{
+	indexableNote := notes.Note{
 		Author:      note.Author,
 		Title:       cleanTitle,
 		Body:        string(cleanInput),
@@ -134,12 +129,11 @@ func (s *NoteSearcher) Put(note *types.Note, ctx context.Context) error {
 	}
 	_, err := s.Client.Index().Index(s.index).
 		Type(s.docType).
-		Id(note.ID).
+		Id(note.Id).
 		BodyJson(indexableNote).
 		Do(ctx)
 
 	if err != nil {
-		klogger.Log("error", err.Error)
 		return err
 	}
 	return nil
@@ -153,7 +147,6 @@ func (s *NoteSearcher) Search(query string, ctx context.Context) ([]types.Note, 
 		Do(ctx)
 
 	if err != nil {
-		klogger.Log("error", err.Error)
 		return nil, err
 	}
 
@@ -161,27 +154,23 @@ func (s *NoteSearcher) Search(query string, ctx context.Context) ([]types.Note, 
 	var ttyp types.ElasticsearchNote
 	var results []types.Note
 	for _, item := range searchResult.Each(reflect.TypeOf(ttyp)) {
-		jsonLogger.Log(item)
 		note := item.(types.ElasticsearchNote)
 		results = append(results, note.ToNote())
 	}
-	jsonLogger.Log(results)
 	return results, nil
 }
 
-func (s *NoteSearcher) Update(note *types.Note, ctx context.Context) error {
-	internalNote := note.ToElasticSearch()
+func (s *NoteSearcher) Update(note *notes.Note, ctx context.Context) error {
 
 	_, err := s.Client.Update().
-		Id(note.ID).
+		Id(note.Id).
 		Index(s.index).
 		Type(s.docType).
 		DocAsUpsert(true).
-		Doc(internalNote).
+		Doc(note).
 		Do(ctx)
 
 	if err != nil {
-		klogger.Log("error", err)
 		return err
 	}
 
@@ -194,7 +183,6 @@ func (s *NoteSearcher) Delete(id string, ctx context.Context) error {
 		Do(ctx)
 
 	if err != nil {
-		klogger.Log("error", err.Error)
 		return err
 	}
 	return nil

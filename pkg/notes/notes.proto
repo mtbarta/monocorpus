@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 service Notes {
   rpc createNote(Note) returns (Note);
   rpc deleteNote(Note) returns (Note);
-  rpc updateNote(Note) returns (Note);
+  rpc updateNote(Note) returns (Empty);
   rpc getNotes(Query) returns (NoteList); 
 }
 

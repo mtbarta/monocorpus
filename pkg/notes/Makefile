@@ -18,4 +18,4 @@ container: protobuf
 	docker build -t $(CURRENT_DIR):$(VERSION) -f Dockerfile $(GOPATH)/src
 
 protobuf:
-	protoc --go_out=plugins=grpc:. notes.proto
+	protoc --go_out=plugins=grpc:. --micro_out=. notes.proto

@@ -11,7 +11,6 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
       POSTGRES_DB: login
     volumes:
-      # - ./login/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
       - '$POSTGRES_DATA_LOC:/var/lib/postgresql/data'
     networks:
       - backend
@@ -32,6 +31,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
+  consul:
+    image: consul:1.2.2
+    network_mode: 'host'
   notes:
     image: notes:latest
     restart: always
@@ -44,12 +46,12 @@ services:
       - COLLECTION=store
     networks:
       - backend
-    healthcheck:
-      test: ["CMD", "/go/bin/healthcheck"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
+    # healthcheck:
+    #   test: ["CMD", "/go/bin/healthcheck"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 5s
   search:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
     restart: always
