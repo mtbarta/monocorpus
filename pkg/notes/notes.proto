@@ -2,28 +2,15 @@ syntax="proto3";
 
 package notes;
 
-// import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 service Notes {
   rpc createNote(Note) returns (Note);
   rpc deleteNote(Note) returns (Note);
-  rpc updateNote(Note) returns (Empty);
+  rpc updateNote(Note) returns (Note);
   rpc getNotes(Query) returns (NoteList); 
 }
 
-// service Notes {
-// 	rpc CreateNote(ctx *context.Context, note *api.Note) error
-// 	rpc DeleteNote(ctx *context.Context, note *api.Note) error
-// 	rpc UpdateNote(ctx *context.Context, note *api.Note) error
-// 	GetNotes(ctx *context.Context, queryRequest *api.QueryRequest) ([]api.Note, error)
-// }
-// err := s.noteCollection.Remove(&api.Note{
-//   Title:       note.Title,
-//   Author:      note.Author,
-//   Team:        note.Team,
-//   DateCreated: note.DateCreated,
-// })
 message Query {
   repeated string IDs = 1;
   string title = 2;
@@ -54,7 +41,8 @@ message Note {
   google.protobuf.Timestamp dateModified = 8;
   string link = 9;
   bytes image = 10;
-  repeated Tag tags= 11;
+  repeated Tag tags = 11;
+  float score = 12;
 }
 
 message Empty {

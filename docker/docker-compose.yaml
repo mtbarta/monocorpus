@@ -17,12 +17,16 @@ services:
     labels:
       - "traefik.enable=false"
   mongo:
-    image: mongo:3.6.2-jessie
+    image: monocorpus/mongo:3.6.2-jessie
     restart: always
     volumes:
       - '$MONGO_DATA_LOC:/data/db'
     networks:
       - backend
+    environment:
+      CONSUL_JOIN: consul
+      CONSUL_DC: dc1
+      CONSUL_SERVICE_NAME: mongo
     labels:
       - "traefik.enable=false"
     healthcheck:
@@ -31,32 +35,53 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
+      
   consul:
+    # needs to map volumes!
     image: consul:1.2.2
-    network_mode: 'host'
+    container_name: consul
+    command: agent -ui -server -client 0.0.0.0 -bind 0.0.0.0 -bootstrap-expect=1
+    networks:
+      - backend
+    dns: consul
+    dns_search: service.consul
+
   notes:
     image: notes:latest
     restart: always
     environment:
-      - PORT=8889
-      - HTTPPORT=8888
       - DBHOST=mongo
       - DBPORT=27017
       - DBNAME=notes
       - COLLECTION=store
+      - MICRO_REGISTRY_ADDRESS=consul:8500
     networks:
       - backend
-    # healthcheck:
-    #   test: ["CMD", "/go/bin/healthcheck"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 5s
+    dns: consul
+    dns_search: service.consul
+
   search:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.2
+    image: search:latest
+    restart: always
+    environment:
+      COLLECTION: store
+      MICRO_REGISTRY_ADDRESS: consul:8500
+      SEARCHINDEX: notes
+      SEARCHTYPE: note
+    networks:
+      - backend
+    dns: consul
+    dns_search: service.consul
+
+
+  elasticsearch:
+    image: monocorpus/elasticsearch:6.2.2-oss
     restart: always
     environment:
       - "discovery.type=single-node"
+      - "CONSUL_JOIN=consul"
+      - "CONSUL_DC=dc1"
+      - "CONSUL_SERVICE_NAME=elasticsearch"
     volumes:
       - "$SEARCH_DATA_LOC:/usr/share/elasticsearch/data"
     networks:
@@ -69,20 +94,16 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+
   gateway:
     image: gateway:latest
     restart: always
     environment:
-      LOGINHOST: login
-      LOGINPORT: 8888
-      NOTESHOST: notes
-      NOTESPORT: 8889
-      SEARCHHOST: search
-      SEARCHPORT: 9200
       SEARCHINDEX: notes
       SEARCHTYPE: note
       HTTPPORT: 8081
-      PUBKEY: "-----BEGIN PUBLIC KEY-----\n${KEY}\n-----END PUBLIC KEY-----"
+      MICRO_REGISTRY_ADDRESS: consul:8500
+      REALM: notebook
     healthcheck:
       test: ["CMD", "/go/bin/healthcheck"]
       interval: 30s
@@ -90,17 +111,20 @@ services:
       retries: 3
       start_period: 10s
     depends_on:
-      - search
+      - elasticsearch
       - notes
     networks:
       - web
       - backend
+    dns: consul
+    dns_search: service.consul
     labels:
       - "traefik.backend=gateway"
       - "traefik.docker.network=${NETWORK}_web"
       - "traefik.frontend.rule=PathPrefix:/notes;Host:$HOST"
       - "traefik.enable=true"
       - "traefik.port=8081"
+      
   keycloak:
     image: keycloak:latest
     restart: always

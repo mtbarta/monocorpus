@@ -5,7 +5,6 @@ import (
 	"reflect"
 
 	notes "github.com/mtbarta/monocorpus/pkg/notes"
-	"gitlab.com/team-notes/notes/pkg/types"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/olivere/elastic"
@@ -65,6 +64,35 @@ type NoteSearcher struct {
 	docType string
 }
 
+func (s *NoteSearcher) Search(ctx context.Context, noteQuery *SearchQuery, resp *notes.NoteList) error {
+	q := elastic.NewMultiMatchQuery(noteQuery.GetQuery(), "title", "body")
+	searchResult, err := s.Client.Search().
+		Index(s.index).
+		Query(q).
+		Do(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	var ttyp notes.Note
+	var results notes.NoteList
+	for _, item := range searchResult.Each(reflect.TypeOf(ttyp)) {
+		note := item.(notes.Note)
+		results.Notes = append(results.Notes, &note)
+	}
+
+	resp = &results
+	return nil
+}
+
+type NoteManager struct {
+	Client  *elastic.Client
+	url     string
+	index   string
+	docType string
+}
+
 func NewNoteSearcher(host string, port string, index string, docType string) (*NoteSearcher, error) {
 	url := "http://" + host + ":" + port
 	Client, err := elastic.NewClient(elastic.SetURL(url))
@@ -80,20 +108,35 @@ func NewNoteSearcher(host string, port string, index string, docType string) (*N
 	}, nil
 }
 
-func (s *NoteSearcher) Ping() (*elastic.PingResult, error) {
+func NewNoteManager(host string, port string, index string, docType string) (*NoteManager, error) {
+	url := "http://" + host + ":" + port
+	Client, err := elastic.NewClient(elastic.SetURL(url))
+
+	if err != nil {
+		return nil, err
+	}
+	return &NoteManager{
+		Client:  Client,
+		url:     host + ":" + port,
+		index:   index,
+		docType: docType,
+	}, nil
+}
+
+func (s *NoteManager) Ping() (*elastic.PingResult, error) {
 	ctx := context.Background()
 	info, _, err := s.Client.Ping(s.url).Do(ctx)
 
 	return info, err
 }
 
-func (s *NoteSearcher) ElasticSearchVersion() (string, error) {
+func (s *NoteManager) ElasticSearchVersion() (string, error) {
 	esversion, err := s.Client.ElasticsearchVersion(s.url)
 
 	return esversion, err
 }
 
-func (s *NoteSearcher) EnsureIndex() (bool, error) {
+func (s *NoteManager) EnsureIndex() (bool, error) {
 	ctx := context.Background()
 	exists, err := s.Client.IndexExists(s.index).Do(ctx)
 	if err != nil {
@@ -115,7 +158,7 @@ func (s *NoteSearcher) EnsureIndex() (bool, error) {
 	return exists, err
 }
 
-func (s *NoteSearcher) Put(note *notes.Note, ctx context.Context) error {
+func (s *NoteManager) Put(ctx context.Context, note *notes.Note) error {
 	cleanInput := blackfriday.Run([]byte(note.Body))
 	cleanInput = bluemonday.UGCPolicy().SanitizeBytes(cleanInput)
 
@@ -139,29 +182,7 @@ func (s *NoteSearcher) Put(note *notes.Note, ctx context.Context) error {
 	return nil
 }
 
-func (s *NoteSearcher) Search(query string, ctx context.Context) ([]types.Note, error) {
-	q := elastic.NewMultiMatchQuery(query, "title", "body")
-	searchResult, err := s.Client.Search().
-		Index(s.index).
-		Query(q).
-		Do(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// return searchResult, err
-	var ttyp types.ElasticsearchNote
-	var results []types.Note
-	for _, item := range searchResult.Each(reflect.TypeOf(ttyp)) {
-		note := item.(types.ElasticsearchNote)
-		results = append(results, note.ToNote())
-	}
-	return results, nil
-}
-
-func (s *NoteSearcher) Update(note *notes.Note, ctx context.Context) error {
-
+func (s *NoteManager) Update(ctx context.Context, note *notes.Note) error {
 	_, err := s.Client.Update().
 		Id(note.Id).
 		Index(s.index).
@@ -177,7 +198,7 @@ func (s *NoteSearcher) Update(note *notes.Note, ctx context.Context) error {
 	return nil
 }
 
-func (s *NoteSearcher) Delete(id string, ctx context.Context) error {
+func (s *NoteManager) Delete(ctx context.Context, id string) error {
 	_, err := s.Client.Delete().
 		Id(id).
 		Do(ctx)

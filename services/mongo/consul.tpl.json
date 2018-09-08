@@ -1,0 +1,20 @@
+{
+  "data_dir": "/tmp/consul",
+  "datacenter": "${CONSUL_DC}",
+  "ports": {
+      "dns": -1
+  },
+  "services": [
+      {
+          "name": "${CONSUL_SERVICE_NAME}",
+          "port": 3306,
+          "checks": [
+              {
+                  "tcp": "localhost:27017",
+                  "interval": "10s",
+                  "timeout": "1s"
+              }
+          ]
+      }
+  ]
+}

@@ -1,0 +1,13 @@
+syntax="proto3";
+
+package search;
+
+import "notes.proto";
+
+service Search {
+  rpc Search(SearchQuery) returns (notes.NoteList);
+}
+
+message SearchQuery {
+  string query = 1;
+}

@@ -5,14 +5,14 @@ import (
 	"errors"
 	"net/http"
 
-	notes "github.com/mtbarta/monocorpus/pkg/notes/types"
+	notes "github.com/mtbarta/monocorpus/pkg/notes"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
 func OnError(w http.ResponseWriter, r *http.Request, err string) {
-	logger.Log("error", err)
+	logger.Fatalf("error", err)
 	http.Error(w, err, http.StatusExpectationFailed)
 }
 
@@ -36,7 +36,7 @@ func TeamAuthMiddleware(next http.Handler) http.Handler {
 		claims, err := getClaims(r)
 
 		if err != nil {
-			logger.Log("claimsError", err.Error(), "request", r.Context())
+			logger.Fatalf("claimsError", err.Error(), "request", r.Context())
 			code := http.StatusUnauthorized
 			http.Error(w, http.StatusText(code), code)
 			return
@@ -73,7 +73,7 @@ func getClaims(r *http.Request) (jwt.MapClaims, error) {
 	user := r.Context().Value("user")
 
 	if user == nil {
-		logger.Log("err", "no user token set", "user", user)
+		logger.Fatalf("err", "no user token set", "user", user)
 		return nil, errors.New("no user token set")
 	}
 	claims := user.(*jwt.Token).Claims.(jwt.MapClaims)

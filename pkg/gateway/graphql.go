@@ -4,11 +4,10 @@ import (
 	"context"
 	"strconv"
 
+	micro "github.com/micro/go-micro"
 	npb "github.com/mtbarta/monocorpus/pkg/notes"
-	search "github.com/mtbarta/monocorpus/pkg/notes/search"
-	"github.com/mtbarta/monocorpus/pkg/notes/types"
+	search "github.com/mtbarta/monocorpus/pkg/search"
 
-	"github.com/go-kit/kit/log"
 	"github.com/golang/protobuf/ptypes/timestamp"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -45,13 +44,24 @@ var Schema = `
 `
 
 type Resolver struct {
-	notesConn    npb.NotesClient
+	notesConn    npb.NotesService
 	searchClient *search.NoteSearcher
-	logger       *log.Logger
+	putSink      micro.Publisher
+	updateSink   micro.Publisher
+	deleteSink   micro.Publisher
 }
 
-func NewResolver(notesConn npb.NotesClient, searchClient *search.NoteSearcher, logger *log.Logger) *Resolver {
-	return &Resolver{notesConn: notesConn, searchClient: searchClient, logger: logger}
+func NewResolver(notesConn npb.NotesService,
+	searchClient *search.NoteSearcher,
+	putSink micro.Publisher, updateSink micro.Publisher,
+	deleteSink micro.Publisher) *Resolver {
+	return &Resolver{
+		notesConn:    notesConn,
+		searchClient: searchClient,
+		putSink:      putSink,
+		updateSink:   updateSink,
+		deleteSink:   deleteSink,
+	}
 }
 
 func (r *Resolver) Search(ctx context.Context, args *struct {
@@ -77,15 +87,20 @@ func (r *Resolver) Search(ctx context.Context, args *struct {
 	}
 
 	q := pointerToString(args.Query)
-	var notes []types.Note
+	var notes *npb.NoteList
 	if r.searchClient != nil {
 		var noteResolvers []*NoteResolver
 
-		notes, _ = r.searchClient.Search(q, ctx)
+		query := search.SearchQuery{
+			Query: q,
+		}
+		err := r.searchClient.Search(ctx, &query, notes)
+		if err != nil {
+			logger.Fatalf("failed to get search results")
+		}
 
-		for _, n := range notes {
-			pbNote := n.ToProto()
-			noteResolvers = append(noteResolvers, &NoteResolver{Note: &pbNote})
+		for _, n := range notes.Notes {
+			noteResolvers = append(noteResolvers, &NoteResolver{Note: n})
 		}
 
 		return &noteResolvers
@@ -146,7 +161,7 @@ func (r *Resolver) Notes(ctx context.Context, args *struct {
 	notes, err := r.notesConn.GetNotes(ctx, &query)
 
 	if err != nil {
-		logger.Log("err", err.Error())
+		logger.Fatalf("err", err.Error())
 		return nil
 	}
 
@@ -175,13 +190,6 @@ func ParseFromAndTo(Fromdate *float64, Todate *float64) (*timestamp.Timestamp, *
 }
 
 func pointerToString(point *string) string {
-	if point == nil {
-		return ""
-	}
-	return *point
-}
-
-func pointerToNil(point *string) string {
 	if point == nil {
 		return ""
 	}
@@ -269,16 +277,16 @@ func (r *Resolver) CreateNote(ctx context.Context, args *struct {
 	Tags         *[]*string
 }) (*NoteResolver, error) {
 
-	title := pointerToNil(args.Title)
+	title := pointerToString(args.Title)
 
-	id := pointerToNil(args.ID)
-	body := pointerToNil(args.Body)
-	author := pointerToNil(args.Author)
+	id := pointerToString(args.ID)
+	body := pointerToString(args.Body)
+	author := pointerToString(args.Author)
 	if author == "" {
 		author = ctx.Value("email").(string)
 	}
-	noteType := pointerToNil(args.Type)
-	link := pointerToNil(args.Link)
+	noteType := pointerToString(args.Type)
+	link := pointerToString(args.Link)
 	var created, modified int64
 	if args.DateCreated == nil {
 		created = 0
@@ -309,10 +317,13 @@ func (r *Resolver) CreateNote(ctx context.Context, args *struct {
 	if err != nil {
 		return &NoteResolver{Note: note}, err
 	}
+
+	if err := r.putSink.Publish(ctx, note); err != nil {
+		logger.Fatalf("error publishing %v", err)
+	}
+
 	return &NoteResolver{Note: note}, nil
 }
-
-// func (r *Resolver) createNote(args)
 
 func (r *Resolver) DeleteNote(ctx context.Context, args *struct {
 	ID           *string
@@ -326,13 +337,13 @@ func (r *Resolver) DeleteNote(ctx context.Context, args *struct {
 	Link         *string
 }) (*NoteResolver, error) {
 
-	title := pointerToNil(args.Title)
+	title := pointerToString(args.Title)
 
-	id := pointerToNil(args.ID)
-	body := pointerToNil(args.Body)
-	author := pointerToNil(args.Author)
-	noteType := pointerToNil(args.Type)
-	// link := pointerToNil(args.Link)
+	id := pointerToString(args.ID)
+	body := pointerToString(args.Body)
+	author := pointerToString(args.Author)
+	noteType := pointerToString(args.Type)
+	// link := pointerToString(args.Link)
 	var created, modified int64
 	if args.DateCreated == nil {
 		created = 0
@@ -348,10 +359,6 @@ func (r *Resolver) DeleteNote(ctx context.Context, args *struct {
 	createdTime := timestamp.Timestamp{Seconds: created, Nanos: 0}
 	modifiedTime := timestamp.Timestamp{Seconds: modified, Nanos: 0}
 
-	if r.searchClient != nil {
-		r.searchClient.Delete(id, ctx)
-	}
-
 	note, err := r.notesConn.DeleteNote(ctx, &npb.Note{
 		Id:           id,
 		Title:        title,
@@ -365,6 +372,11 @@ func (r *Resolver) DeleteNote(ctx context.Context, args *struct {
 	if err != nil {
 		return &NoteResolver{Note: note}, err
 	}
+
+	if err := r.deleteSink.Publish(ctx, note); err != nil {
+		logger.Fatalf("error publishing %v", err)
+	}
+
 	return &NoteResolver{Note: note}, nil
 }
 
@@ -382,12 +394,12 @@ func (r *Resolver) UpdateNote(ctx context.Context, args *struct {
 	Tags         *[]*string
 }) (*NoteResolver, error) {
 
-	title := pointerToNil(args.Title)
-	id := pointerToNil(args.ID)
-	body := pointerToNil(args.Body)
-	author := pointerToNil(args.Author)
-	noteType := pointerToNil(args.Type)
-	link := pointerToNil(args.Link)
+	title := pointerToString(args.Title)
+	id := pointerToString(args.ID)
+	body := pointerToString(args.Body)
+	author := pointerToString(args.Author)
+	noteType := pointerToString(args.Type)
+	link := pointerToString(args.Link)
 	var created, modified int64
 	if args.DateCreated == nil {
 		created = 0
@@ -424,13 +436,13 @@ func (r *Resolver) UpdateNote(ctx context.Context, args *struct {
 
 	note, err := r.notesConn.UpdateNote(ctx, &pbNote)
 
-	if r.searchClient != nil {
-		xformedNote := types.PbNoteToMongo(note)
-		r.searchClient.Update(&xformedNote, ctx)
-	}
-
 	if err != nil {
 		return &NoteResolver{Note: note}, err
 	}
+
+	if err := r.updateSink.Publish(ctx, &pbNote); err != nil {
+		logger.Fatalf("error publishing %v", err)
+	}
+
 	return &NoteResolver{Note: note}, nil
 }

@@ -1,0 +1,21 @@
+{
+  "data_dir": "/tmp/consul",
+  "datacenter": "${CONSUL_DC}",
+  "ports": {
+      "dns": -1
+  },
+  "services": [
+      {
+          "name": "${CONSUL_SERVICE_NAME}",
+          "port": 9200,
+          "checks": [
+              {
+                  "http": "http://localhost:9200/_cat/health?pretty",
+                  "interval": "10s",
+                  "timeout": "1s",
+                  "DeregisterCriticalServiceAfter": "10s"
+              }
+          ]
+      }
+  ]
+}

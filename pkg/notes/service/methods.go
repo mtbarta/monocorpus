@@ -43,6 +43,7 @@ func (s NoteService) UpdateNote(ctx context.Context, note *notes.Note, resp *not
 	if err != nil {
 		return NoteError{"failed to update note"}
 	}
+	resp = note
 	return nil
 }
 

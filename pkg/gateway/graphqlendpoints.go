@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/go-kit/kit/circuitbreaker"
-	"github.com/go-kit/kit/log"
 	graphql "github.com/graph-gophers/graphql-go"
 	"github.com/sony/gobreaker"
 
@@ -15,8 +14,8 @@ import (
 )
 
 //create the notes handler to serve at /notes
-func MakeNotesHandler(schema *graphql.Schema, logger *log.Logger) *httptransport.Server {
-	endpoint := makeGraphQLEndpoint(schema, logger)
+func MakeNotesHandler(schema *graphql.Schema) *httptransport.Server {
+	endpoint := makeGraphQLEndpoint(schema)
 
 	endpoint = circuitbreaker.Gobreaker(gobreaker.NewCircuitBreaker(gobreaker.Settings{}))(endpoint)
 
@@ -28,7 +27,7 @@ func MakeNotesHandler(schema *graphql.Schema, logger *log.Logger) *httptransport
 	)
 }
 
-func makeGraphQLEndpoint(schema *graphql.Schema, _ *log.Logger) endpoint.Endpoint {
+func makeGraphQLEndpoint(schema *graphql.Schema) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 
 		// _, ok := ctx.Value(httptransport.ContextKeyRequestAuthorization).(string)
