@@ -45,6 +45,8 @@ services:
       - backend
     dns: consul
     dns_search: service.consul
+    labels:
+      - "traefik.enable=false"
 
   notes:
     image: notes:latest
@@ -59,6 +61,11 @@ services:
       - backend
     dns: consul
     dns_search: service.consul
+    depends_on:
+      - mongo
+      - consul
+    labels:
+      - "traefik.enable=false"
 
   search:
     image: search:latest
@@ -72,7 +79,11 @@ services:
       - backend
     dns: consul
     dns_search: service.consul
-
+    depends_on:
+      - elasticsearch
+      - consul
+    labels:
+      - "traefik.enable=false"
 
   elasticsearch:
     image: monocorpus/elasticsearch:6.2.2-oss
@@ -103,7 +114,9 @@ services:
       SEARCHTYPE: note
       HTTPPORT: 8081
       MICRO_REGISTRY_ADDRESS: consul:8500
-      REALM: notebook
+      CLIENTID: notebook
+      ISSUERURL: http://$HOST/auth/realms/Notes
+      JWKSURL: http://keycloak:8080/auth/realms/Notes/protocol/openid-connect/certs
     healthcheck:
       test: ["CMD", "/go/bin/healthcheck"]
       interval: 30s
@@ -111,7 +124,6 @@ services:
       retries: 3
       start_period: 10s
     depends_on:
-      - elasticsearch
       - notes
     networks:
       - web
@@ -154,36 +166,9 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
-  frontend:
-    image: frontend:latest
-    restart: always
-    networks:
-      - web
-      - backend
-    labels:
-      - "traefik.backend=frontend"
-      - "traefik.docker.network=${NETWORK}_web"
-      - "traefik.frontend.rule=PathPrefix:/;Host:$HOST"
-      - "traefik.enable=true"
-      - "traefik.port=80"
-      - "traefik.default.protocol=http"
-      - "traefik.passHostHeader=true"
-    healthcheck:
-      test: curl --fail localhost
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
+
   # frontend:
-  #   image: node:9.11-alpine
-  #   command: 'npm run dev'
-  #   working_dir: /frontend
-  #   user: node
-  #   environment:
-  #     - PORT=8091
-  #     - HOST=0.0.0.0
-  #   volumes:
-  #     - "../pkg/frontend:/frontend:ro"
+  #   image: frontend:latest
   #   restart: always
   #   networks:
   #     - web
@@ -193,9 +178,38 @@ services:
   #     - "traefik.docker.network=${NETWORK}_web"
   #     - "traefik.frontend.rule=PathPrefix:/;Host:$HOST"
   #     - "traefik.enable=true"
-  #     - "traefik.port=8091"
+  #     - "traefik.port=80"
   #     - "traefik.default.protocol=http"
   #     - "traefik.passHostHeader=true"
+  #   healthcheck:
+  #     test: curl --fail localhost
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 5s
+  frontend:
+    image: node:9.11-alpine
+    command: 'npm run dev'
+    working_dir: /web
+    user: node
+    environment:
+      - PORT=8091
+      - HOST=0.0.0.0
+    volumes:
+      - "../web:/web:ro"
+    restart: always
+    networks:
+      - web
+      - backend
+    labels:
+      - "traefik.backend=frontend"
+      - "traefik.docker.network=${NETWORK}_web"
+      - "traefik.frontend.rule=PathPrefix:/;Host:$HOST"
+      - "traefik.enable=true"
+      - "traefik.port=8091"
+      - "traefik.default.protocol=http"
+      - "traefik.passHostHeader=true"
+
   traefik:
     image: traefik:1.5.4-alpine
     container_name: traefik

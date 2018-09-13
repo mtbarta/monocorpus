@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/mtbarta/monocorpus/pkg/auth"
 	"github.com/mtbarta/monocorpus/pkg/discovery"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -27,10 +28,10 @@ func main() {
 
 	searchIndex := viper.GetString("searchIndex")
 	searchType := viper.GetString("searchType")
-
+	clientID := viper.GetString("clientID")
 	port := viper.GetString("HttpPort")
-
-	pubKey := viper.GetString("pubKey")
+	issuerURL := viper.GetString("issuerURL")
+	jwksURL := viper.GetString("jwksURL")
 
 	logger := logging.NewProductionLogger()
 
@@ -61,14 +62,23 @@ func main() {
 	graphqlResolver := app.NewResolver(notesClient, searchClient, putSink, updateSink, deleteSink)
 	schema := graphql.MustParseSchema(app.Schema, graphqlResolver)
 
-	jwtMiddleware := app.NewJWTMiddleware([]byte(pubKey))
 	var notesHandler http.Handler
 	{
 		notesHandler = app.MakeNotesHandler(schema)
 		notesHandler = accessControl(notesHandler)
-		notesHandler = app.TeamAuthMiddleware(notesHandler)
-		notesHandler = jwtMiddleware.Handler(notesHandler)
+		notesHandler = auth.TeamAuthMiddleware(notesHandler)
+		notesHandler = auth.NewJWTMiddleware(clientID, "user", jwksURL, issuerURL, notesHandler)
 	}
+
+	service := micro.NewService(
+		micro.Name("gateway"),
+	)
+	service.Init()
+
+	logger.Infof("creating service", "service", "gateway")
+	// basically hack the service discovery mechanism to register the gateway.
+	service.Server().Register()
+	defer service.Server().Deregister()
 
 	r.Handle("/notes", notesHandler)
 	r.HandleFunc("/health", healthcheck.HealthCheckHandlerFunc)
