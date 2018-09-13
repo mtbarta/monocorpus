@@ -1,11 +1,11 @@
 package discovery
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/micro/go-micro/registry"
 	"github.com/micro/go-micro/selector"
+	"github.com/mtbarta/monocorpus/pkg/logging"
 )
 
 type ServiceLocation struct {
@@ -13,6 +13,8 @@ type ServiceLocation struct {
 	Port    string
 }
 
+// GetMicroService reuses the go-micro registry to fetch an address and port
+// of a registered service.
 func GetMicroService(registry registry.Registry, service string) (ServiceLocation, error) {
 	selector := selector.NewSelector(
 		selector.Registry(registry),
@@ -20,13 +22,13 @@ func GetMicroService(registry registry.Registry, service string) (ServiceLocatio
 
 	nextNode, err := selector.Select(service)
 	if err != nil {
-		fmt.Print(err)
+		logging.Logger.Fatalf("failed to select service", "error", err.Error())
 		return ServiceLocation{}, err
 	}
 
 	node, err := nextNode()
 	if err != nil {
-		fmt.Print(err)
+		logging.Logger.Fatalf("failed to find next node", "error", err.Error())
 		return ServiceLocation{}, err
 	}
 

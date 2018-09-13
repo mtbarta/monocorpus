@@ -5,10 +5,10 @@ package notes;
 import "google/protobuf/timestamp.proto";
 
 service Notes {
-  rpc createNote(Note) returns (Note);
-  rpc deleteNote(Note) returns (Note);
-  rpc updateNote(Note) returns (Note);
-  rpc getNotes(Query) returns (NoteList); 
+  rpc CreateNote(Note) returns (Note);
+  rpc DeleteNote(Note) returns (Note);
+  rpc UpdateNote(Note) returns (Note);
+  rpc GetNotes(Query) returns (NoteList); 
 }
 
 message Query {

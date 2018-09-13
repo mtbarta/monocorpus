@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	micro "github.com/micro/go-micro"
+	log "github.com/mtbarta/monocorpus/pkg/logging"
 	npb "github.com/mtbarta/monocorpus/pkg/notes"
 	search "github.com/mtbarta/monocorpus/pkg/search"
 
@@ -96,7 +97,7 @@ func (r *Resolver) Search(ctx context.Context, args *struct {
 		}
 		err := r.searchClient.Search(ctx, &query, notes)
 		if err != nil {
-			logger.Fatalf("failed to get search results")
+			log.Logger.Fatalf("failed to get search results")
 		}
 
 		for _, n := range notes.Notes {
@@ -154,14 +155,15 @@ func (r *Resolver) Notes(ctx context.Context, args *struct {
 	query := npb.Query{
 		IDs:      ids, // *args.IDs,
 		Title:    title,
+		Team:     "",
 		Authors:  authors, //*args.authors,
 		Todate:   to,
 		Fromdate: from,
 	}
 	notes, err := r.notesConn.GetNotes(ctx, &query)
-
+	log.Logger.Infof("returned notes", notes.Notes)
 	if err != nil {
-		logger.Fatalf("err", err.Error())
+		log.Logger.Fatalf("err", err.Error())
 		return nil
 	}
 
@@ -302,7 +304,7 @@ func (r *Resolver) CreateNote(ctx context.Context, args *struct {
 	createdTime := timestamp.Timestamp{Seconds: created, Nanos: 0}
 	modifiedTime := timestamp.Timestamp{Seconds: modified, Nanos: 0}
 
-	note, err := r.notesConn.CreateNote(ctx, &npb.Note{
+	input := npb.Note{
 		Id:           id,
 		Title:        title,
 		Body:         body,
@@ -312,14 +314,11 @@ func (r *Resolver) CreateNote(ctx context.Context, args *struct {
 		Type:         noteType,
 		Link:         link,
 		Image:        []byte(*args.Image),
-	})
-
-	if err != nil {
-		return &NoteResolver{Note: note}, err
 	}
 
-	if err := r.putSink.Publish(ctx, note); err != nil {
-		logger.Fatalf("error publishing %v", err)
+	note, err := r.notesConn.CreateNote(ctx, &input)
+	if err != nil {
+		return &NoteResolver{Note: note}, err
 	}
 
 	return &NoteResolver{Note: note}, nil
@@ -374,7 +373,7 @@ func (r *Resolver) DeleteNote(ctx context.Context, args *struct {
 	}
 
 	if err := r.deleteSink.Publish(ctx, note); err != nil {
-		logger.Fatalf("error publishing %v", err)
+		log.Logger.Fatalf("error publishing %v", err)
 	}
 
 	return &NoteResolver{Note: note}, nil
@@ -441,7 +440,7 @@ func (r *Resolver) UpdateNote(ctx context.Context, args *struct {
 	}
 
 	if err := r.updateSink.Publish(ctx, &pbNote); err != nil {
-		logger.Fatalf("error publishing %v", err)
+		log.Logger.Fatalf("error publishing %v", err)
 	}
 
 	return &NoteResolver{Note: note}, nil

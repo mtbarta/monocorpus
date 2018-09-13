@@ -71,7 +71,7 @@ func NewNotesService(name string, c client.Client) NotesService {
 }
 
 func (c *notesService) CreateNote(ctx context.Context, in *Note, opts ...client.CallOption) (*Note, error) {
-	req := c.c.NewRequest(c.name, "Notes.createNote", in)
+	req := c.c.NewRequest(c.name, "Notes.CreateNote", in)
 	out := new(Note)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -81,7 +81,7 @@ func (c *notesService) CreateNote(ctx context.Context, in *Note, opts ...client.
 }
 
 func (c *notesService) DeleteNote(ctx context.Context, in *Note, opts ...client.CallOption) (*Note, error) {
-	req := c.c.NewRequest(c.name, "Notes.deleteNote", in)
+	req := c.c.NewRequest(c.name, "Notes.DeleteNote", in)
 	out := new(Note)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -91,7 +91,7 @@ func (c *notesService) DeleteNote(ctx context.Context, in *Note, opts ...client.
 }
 
 func (c *notesService) UpdateNote(ctx context.Context, in *Note, opts ...client.CallOption) (*Note, error) {
-	req := c.c.NewRequest(c.name, "Notes.updateNote", in)
+	req := c.c.NewRequest(c.name, "Notes.UpdateNote", in)
 	out := new(Note)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -101,7 +101,7 @@ func (c *notesService) UpdateNote(ctx context.Context, in *Note, opts ...client.
 }
 
 func (c *notesService) GetNotes(ctx context.Context, in *Query, opts ...client.CallOption) (*NoteList, error) {
-	req := c.c.NewRequest(c.name, "Notes.getNotes", in)
+	req := c.c.NewRequest(c.name, "Notes.GetNotes", in)
 	out := new(NoteList)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
