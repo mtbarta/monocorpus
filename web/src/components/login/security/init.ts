@@ -1,6 +1,4 @@
 import { keycloakAuth } from '@/keycloak'
-import GraphClient from '@/graphql/graphClient'
-import authHeader from './header'
 import store from '@/store'
 
 export default (next, roles) => {

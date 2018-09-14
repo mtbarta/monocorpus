@@ -1,4 +1,4 @@
-<<template>
+<template>
   <!-- <v-container fluid grid-list> -->
     <v-layout column wrap>
         <v-divider />

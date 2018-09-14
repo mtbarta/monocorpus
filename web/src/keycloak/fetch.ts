@@ -1,5 +1,4 @@
 import { keycloakAuth } from '../keycloak'
-import { KeycloakPromise } from 'keycloak-js'
 /**
  * before fetching a page through graphql,
  * check whether the token is expired and 

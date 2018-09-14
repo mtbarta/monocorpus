@@ -11,9 +11,6 @@
                <v-btn flat value="arxiv">
                 Arxiv
               </v-btn>
-               <v-btn flat value="tex">
-                Latex
-              </v-btn>
               <v-btn flat value="image">
                 Image
               </v-btn>

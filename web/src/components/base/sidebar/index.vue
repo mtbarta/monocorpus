@@ -11,7 +11,12 @@
 
     <user-menu />
     
-    <notebook-link/>
+    <path-link
+      name="Dashboard"
+    />
+    <path-link
+      name="Notebook"
+    />
 
     <note-menu />
 
@@ -28,7 +33,7 @@
 import Vue from 'vue'
 import NoteMenu from './NoteMenu.vue'
 import UserMenu from './UserMenu.vue'
-import NotebookLink from './NotebookLink.vue'
+import PathLink from './PathLink.vue'
 import LogoutLink from './LogoutLink.vue'
 
 export default Vue.extend({
@@ -36,7 +41,7 @@ export default Vue.extend({
   components: {
     NoteMenu,
     UserMenu,
-    NotebookLink,
+    PathLink,
     LogoutLink
   },
   props: {
