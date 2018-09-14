@@ -9,6 +9,7 @@ import (
 
 	"github.com/mtbarta/monocorpus/pkg/auth"
 	"github.com/mtbarta/monocorpus/pkg/discovery"
+	"github.com/mtbarta/monocorpus/pkg/routing"
 
 	graphql "github.com/graph-gophers/graphql-go"
 	"github.com/micro/go-micro"
@@ -55,9 +56,9 @@ func main() {
 		logger.Fatalf("failed to create search client")
 	}
 
-	putSink := micro.NewPublisher("notes.search.put", notesService.Client())
-	updateSink := micro.NewPublisher("notes.search.update", notesService.Client())
-	deleteSink := micro.NewPublisher("notes.search.delete", notesService.Client())
+	putSink := micro.NewPublisher(routing.NOTE_PUT_CHANNEL, notesService.Client())
+	updateSink := micro.NewPublisher(routing.NOTE_UPDATE_CHANNEL, notesService.Client())
+	deleteSink := micro.NewPublisher(routing.NOTE_DELETE_CHANNEL, notesService.Client())
 
 	graphqlResolver := app.NewResolver(notesClient, searchClient, putSink, updateSink, deleteSink)
 	schema := graphql.MustParseSchema(app.Schema, graphqlResolver)
@@ -78,7 +79,6 @@ func main() {
 	logger.Infof("creating service", "service", "gateway")
 	// basically hack the service discovery mechanism to register the gateway.
 	service.Server().Register()
-	defer service.Server().Deregister()
 
 	r.Handle("/notes", notesHandler)
 	r.HandleFunc("/health", healthcheck.HealthCheckHandlerFunc)
@@ -88,6 +88,7 @@ func main() {
 	go func() {
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		service.Server().Deregister()
 		errc <- fmt.Errorf("%s", <-c)
 	}()
 

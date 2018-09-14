@@ -11,6 +11,7 @@ import (
 
 	"github.com/mtbarta/monocorpus/pkg/discovery"
 	"github.com/mtbarta/monocorpus/pkg/logging"
+	"github.com/mtbarta/monocorpus/pkg/routing"
 	"github.com/mtbarta/monocorpus/pkg/search"
 )
 
@@ -63,9 +64,9 @@ func main() {
 		"index", searchIndex,
 		"type", searchType)
 
-	micro.RegisterSubscriber("note.search.put", service.Server(), handler.Put, server.SubscriberQueue("queue.search.put"))
-	micro.RegisterSubscriber("note.search.update", service.Server(), handler.Update, server.SubscriberQueue("queue.search.update"))
-	micro.RegisterSubscriber("note.search.delete", service.Server(), handler.Delete, server.SubscriberQueue("queue.search.delete"))
+	micro.RegisterSubscriber(routing.NOTE_PUT_CHANNEL, service.Server(), handler.Put, server.SubscriberQueue("queue.search.put"))
+	micro.RegisterSubscriber(routing.NOTE_UPDATE_CHANNEL, service.Server(), handler.Update, server.SubscriberQueue("queue.search.update"))
+	micro.RegisterSubscriber(routing.NOTE_DELETE_CHANNEL, service.Server(), handler.Delete, server.SubscriberQueue("queue.search.delete"))
 
 	if err := service.Run(); err != nil {
 		logger.Fatal(err)
