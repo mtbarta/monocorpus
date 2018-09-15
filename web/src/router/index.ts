@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home.vue'
 import Notebook from '@/components/notebook/Notebook.vue'
+import Dashboard from '@/components/dashboard/Dashboard.vue'
 import Search from '@/components/search/Search.vue'
 import loginGuard from './loginGuard'
 
@@ -14,7 +15,7 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'Dashboard',
+      name: 'Home',
       component: Home,
       meta: { requiresAuth: true },
       children: [
@@ -35,6 +36,12 @@ const router = new Router({
           props: (route) => {
               return {query: route.query.q}
           }
+        },
+        {
+          path: '',
+          name: 'Dashboard',
+          component: Dashboard,
+          meta: {requiresAuth: true }
         }
       ]
     }
