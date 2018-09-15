@@ -67,16 +67,17 @@ func main() {
 		"index", searchIndex,
 		"type", searchType)
 
-	micro.RegisterSubscriber(routing.NOTE_PUT_CHANNEL, 
-		service.Server(), 
+	micro.RegisterSubscriber(routing.NOTE_PUT_CHANNEL,
+		service.Server(),
 		func(ctx context.Context, note *notes.Note) error {
-		logging.Logger.Debug("publishing note")
-		err := handler.Put(ctx, note)
-		if err != nil {
-			logger.Errorf("failed to put note", "err", err)
-		}
-		return nil
-	}, server.SubscriberQueue("queue.search.update")), server.SubscriberQueue("queue.search.put"))
+			logging.Logger.Debug("publishing note")
+			err := handler.Put(ctx, note)
+			if err != nil {
+				logger.Errorf("failed to put note", "err", err)
+			}
+			return nil
+		}, server.SubscriberQueue("queue.search.put"))
+
 	micro.RegisterSubscriber(routing.NOTE_UPDATE_CHANNEL,
 		service.Server(),
 		func(ctx context.Context, note *notes.Note) error {
@@ -87,16 +88,17 @@ func main() {
 			}
 			return nil
 		}, server.SubscriberQueue("queue.search.update"))
-	micro.RegisterSubscriber(routing.NOTE_DELETE_CHANNEL, 
-		service.Server(), 
+
+	micro.RegisterSubscriber(routing.NOTE_DELETE_CHANNEL,
+		service.Server(),
 		func(ctx context.Context, note *notes.Note) error {
-		logging.Logger.Debug("delete note")
-		err := handler.Update(ctx, note)
-		if err != nil {
-			logger.Errorf("failed to delete note", "err", err)
-		}
-		return nil
-	}, server.SubscriberQueue("queue.search.update")), server.SubscriberQueue("queue.search.delete"))
+			logging.Logger.Debug("delete note")
+			err := handler.Update(ctx, note)
+			if err != nil {
+				logger.Errorf("failed to delete note", "err", err)
+			}
+			return nil
+		}, server.SubscriberQueue("queue.search.delete"))
 
 	if err := service.Run(); err != nil {
 		logger.Fatal(err)

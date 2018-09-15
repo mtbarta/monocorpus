@@ -58,6 +58,9 @@ const mapping = `
 				},
 				"link":{
 					"type":"keyword"
+				},
+				"type":{
+					"type":"keyword"
 				}
 			}
 		}
