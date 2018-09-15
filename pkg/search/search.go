@@ -2,9 +2,14 @@ package search
 
 import (
 	"context"
+	"encoding/json"
 	"reflect"
+	"time"
 
+	"github.com/golang/protobuf/ptypes"
+	"github.com/mtbarta/monocorpus/pkg/logging"
 	notes "github.com/mtbarta/monocorpus/pkg/notes"
+	"github.com/mtbarta/monocorpus/pkg/notes/service"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/olivere/elastic"
@@ -35,6 +40,9 @@ const mapping = `
 	"mappings":{
 		"note":{
 			"properties":{
+				"id": {
+					"type": "text"
+				},
 				"author":{
 					"type":"keyword"
 				},
@@ -46,8 +54,7 @@ const mapping = `
 					"type":"text"
 				},
 				"dateCreated":{
-					"type":"date",
-					"format": "epoch_second"
+					"type":"date"
 				},
 				"link":{
 					"type":"keyword"
@@ -75,15 +82,83 @@ func (s *NoteSearcher) Search(ctx context.Context, noteQuery *SearchQuery, resp 
 		return err
 	}
 
-	var ttyp notes.Note
-	var results notes.NoteList
-	for _, item := range searchResult.Each(reflect.TypeOf(ttyp)) {
-		note := item.(notes.Note)
-		results.Notes = append(results.Notes, &note)
+	logging.Logger.Debugf("search results", "amount", searchResult.TotalHits())
+
+	if searchResult.TotalHits() == 0 {
+		return nil
 	}
 
-	resp = &results
+	var ttyp service.Note
+
+	for _, item := range each(searchResult, reflect.TypeOf(ttyp)) {
+		n := item.result.(service.Note)
+		created, err := ptypes.TimestampProto(n.DateCreated)
+		if err != nil {
+			created = nil
+		}
+		modified, err := ptypes.TimestampProto(n.DateModified)
+		if err != nil {
+			modified = nil
+		}
+
+		pbTags := make([]*notes.Tag, len(n.Tags))
+		for _, tag := range n.Tags {
+			pbTags = append(pbTags, &notes.Tag{
+				Text:  tag.Text,
+				Color: tag.Color,
+			})
+		}
+
+		note := notes.Note{
+			Id:           n.ID,
+			Title:        n.Title,
+			Author:       n.Author,
+			Team:         n.Team,
+			Body:         n.Body,
+			Type:         n.Type,
+			DateCreated:  created,
+			DateModified: modified,
+			Link:         n.Link,
+			Image:        n.Image,
+			Tags:         pbTags,
+			Score:        float32(item.score),
+		}
+		resp.Notes = append(resp.Notes, &note)
+	}
 	return nil
+}
+
+type hitResult struct {
+	result interface{}
+	score  float64
+}
+
+// Each is a utility function to iterate over all hits. It saves you from
+// checking for nil values. Notice that Each will ignore errors in
+// serializing JSON and hits with empty/nil _source will get an empty
+// value
+func each(r *elastic.SearchResult, typ reflect.Type) []hitResult {
+	if r.Hits == nil || r.Hits.Hits == nil || len(r.Hits.Hits) == 0 {
+		return nil
+	}
+	var slice []hitResult
+	for _, hit := range r.Hits.Hits {
+		v := reflect.New(typ).Elem()
+		if hit.Source == nil {
+			slice = append(slice, hitResult{
+				result: v.Interface(),
+				score:  *hit.Score,
+			})
+			continue
+		}
+		if err := json.Unmarshal(*hit.Source, v.Addr().Interface()); err == nil {
+			slice = append(slice, hitResult{
+				result: v.Interface(),
+				score:  *hit.Score,
+			})
+		}
+	}
+	return slice
 }
 
 type NoteManager struct {
@@ -159,42 +234,63 @@ func (s *NoteManager) EnsureIndex() (bool, error) {
 }
 
 func (s *NoteManager) Put(ctx context.Context, note *notes.Note) error {
+	logging.Logger.Infof("putting note in search")
 	cleanInput := blackfriday.Run([]byte(note.Body))
 	cleanInput = bluemonday.UGCPolicy().SanitizeBytes(cleanInput)
 
 	cleanTitle := bluemonday.UGCPolicy().Sanitize(note.Title)
-	indexableNote := notes.Note{
+	created, err := ptypes.Timestamp(note.DateCreated)
+	if err != nil {
+		created = time.Now()
+	}
+	indexableNote := service.Note{
 		Author:      note.Author,
 		Title:       cleanTitle,
 		Body:        string(cleanInput),
-		DateCreated: note.DateCreated,
+		DateCreated: created,
 		Link:        note.Link,
 	}
-	_, err := s.Client.Index().Index(s.index).
+	_, err = s.Client.Index().Index(s.index).
 		Type(s.docType).
 		Id(note.Id).
 		BodyJson(indexableNote).
+		Timestamp(created.String()).
 		Do(ctx)
 
 	if err != nil {
+		logging.Logger.Error("failed to put note in elasticsearch")
 		return err
 	}
+	logging.Logger.Infof("successful")
 	return nil
 }
 
 func (s *NoteManager) Update(ctx context.Context, note *notes.Note) error {
-	_, err := s.Client.Update().
-		Id(note.Id).
-		Index(s.index).
+	cleanInput := blackfriday.Run([]byte(note.Body))
+	cleanInput = bluemonday.UGCPolicy().SanitizeBytes(cleanInput)
+
+	cleanTitle := bluemonday.UGCPolicy().Sanitize(note.Title)
+	created, err := ptypes.Timestamp(note.DateCreated)
+	if err != nil {
+		created = time.Now()
+	}
+	indexableNote := service.Note{
+		Author:      note.Author,
+		Title:       cleanTitle,
+		Body:        string(cleanInput),
+		DateCreated: created,
+		Link:        note.Link,
+	}
+	_, err = s.Client.Update().Index(s.index).
 		Type(s.docType).
+		Id(note.Id).
+		Doc(indexableNote).
 		DocAsUpsert(true).
-		Doc(note).
 		Do(ctx)
 
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 

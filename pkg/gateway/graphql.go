@@ -88,14 +88,14 @@ func (r *Resolver) Search(ctx context.Context, args *struct {
 	}
 
 	q := pointerToString(args.Query)
-	var notes *npb.NoteList
+	var notes npb.NoteList
 	if r.searchClient != nil {
 		var noteResolvers []*NoteResolver
 
 		query := search.SearchQuery{
 			Query: q,
 		}
-		err := r.searchClient.Search(ctx, &query, notes)
+		err := r.searchClient.Search(ctx, &query, &notes)
 		if err != nil {
 			log.Logger.Fatalf("failed to get search results")
 		}

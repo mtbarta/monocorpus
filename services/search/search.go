@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"time"
+
+	"github.com/mtbarta/monocorpus/pkg/notes"
 
 	_ "github.com/lib/pq"
 	micro "github.com/micro/go-micro"
@@ -64,9 +67,36 @@ func main() {
 		"index", searchIndex,
 		"type", searchType)
 
-	micro.RegisterSubscriber(routing.NOTE_PUT_CHANNEL, service.Server(), handler.Put, server.SubscriberQueue("queue.search.put"))
-	micro.RegisterSubscriber(routing.NOTE_UPDATE_CHANNEL, service.Server(), handler.Update, server.SubscriberQueue("queue.search.update"))
-	micro.RegisterSubscriber(routing.NOTE_DELETE_CHANNEL, service.Server(), handler.Delete, server.SubscriberQueue("queue.search.delete"))
+	micro.RegisterSubscriber(routing.NOTE_PUT_CHANNEL, 
+		service.Server(), 
+		func(ctx context.Context, note *notes.Note) error {
+		logging.Logger.Debug("publishing note")
+		err := handler.Put(ctx, note)
+		if err != nil {
+			logger.Errorf("failed to put note", "err", err)
+		}
+		return nil
+	}, server.SubscriberQueue("queue.search.update")), server.SubscriberQueue("queue.search.put"))
+	micro.RegisterSubscriber(routing.NOTE_UPDATE_CHANNEL,
+		service.Server(),
+		func(ctx context.Context, note *notes.Note) error {
+			logging.Logger.Debug("update note")
+			err := handler.Update(ctx, note)
+			if err != nil {
+				logger.Errorf("failed to update note", "err", err)
+			}
+			return nil
+		}, server.SubscriberQueue("queue.search.update"))
+	micro.RegisterSubscriber(routing.NOTE_DELETE_CHANNEL, 
+		service.Server(), 
+		func(ctx context.Context, note *notes.Note) error {
+		logging.Logger.Debug("delete note")
+		err := handler.Update(ctx, note)
+		if err != nil {
+			logger.Errorf("failed to delete note", "err", err)
+		}
+		return nil
+	}, server.SubscriberQueue("queue.search.update")), server.SubscriberQueue("queue.search.delete"))
 
 	if err := service.Run(); err != nil {
 		logger.Fatal(err)

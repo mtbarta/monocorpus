@@ -52,6 +52,7 @@ func main() {
 	}
 
 	searchClient, err := search.NewNoteSearcher(elasticLocation.Address, elasticLocation.Port, searchIndex, searchType)
+	logger.Infof("connected to elasticsearch", "address", elasticLocation.Address, "port", elasticLocation.Port, "index", searchIndex)
 	if err != nil {
 		logger.Fatalf("failed to create search client")
 	}
@@ -88,7 +89,6 @@ func main() {
 	go func() {
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		service.Server().Deregister()
 		errc <- fmt.Errorf("%s", <-c)
 	}()
 
@@ -97,6 +97,7 @@ func main() {
 		// logger.Fatalf("transport", "HTTP", "addr", port)
 		errc <- http.ListenAndServe(":"+port, r)
 	}()
+	defer service.Server().Deregister()
 
 	// logger.Log("error", http.ListenAndServe(":8080", nil))
 
