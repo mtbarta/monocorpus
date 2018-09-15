@@ -161,7 +161,7 @@ func (r *Resolver) Notes(ctx context.Context, args *struct {
 		Fromdate: from,
 	}
 	notes, err := r.notesConn.GetNotes(ctx, &query)
-	log.Logger.Infof("returned notes", notes.Notes)
+
 	if err != nil {
 		log.Logger.Fatalf("err", err.Error())
 		return nil
