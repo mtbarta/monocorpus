@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"reflect"
-	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/mtbarta/monocorpus/pkg/logging"
@@ -237,54 +236,26 @@ func (s *NoteManager) EnsureIndex() (bool, error) {
 }
 
 func (s *NoteManager) Put(ctx context.Context, note *notes.Note) error {
-	logging.Logger.Infof("putting note in search")
-	cleanInput := blackfriday.Run([]byte(note.Body))
-	cleanInput = bluemonday.UGCPolicy().SanitizeBytes(cleanInput)
+	logging.Logger.Debug("putting note in search")
+	indexableNote := cleanNote(note)
 
-	cleanTitle := bluemonday.UGCPolicy().Sanitize(note.Title)
-	created, err := ptypes.Timestamp(note.DateCreated)
-	if err != nil {
-		created = time.Now()
-	}
-	indexableNote := service.Note{
-		Author:      note.Author,
-		Title:       cleanTitle,
-		Body:        string(cleanInput),
-		DateCreated: created,
-		Link:        note.Link,
-	}
-	_, err = s.Client.Index().Index(s.index).
+	_, err := s.Client.Index().Index(s.index).
 		Type(s.docType).
 		Id(note.Id).
 		BodyJson(indexableNote).
-		Timestamp(created.String()).
+		Timestamp(indexableNote.DateCreated.String()).
 		Do(ctx)
-
 	if err != nil {
 		logging.Logger.Error("failed to put note in elasticsearch")
 		return err
 	}
-	logging.Logger.Infof("successful")
 	return nil
 }
 
 func (s *NoteManager) Update(ctx context.Context, note *notes.Note) error {
-	cleanInput := blackfriday.Run([]byte(note.Body))
-	cleanInput = bluemonday.UGCPolicy().SanitizeBytes(cleanInput)
-
-	cleanTitle := bluemonday.UGCPolicy().Sanitize(note.Title)
-	created, err := ptypes.Timestamp(note.DateCreated)
-	if err != nil {
-		created = time.Now()
-	}
-	indexableNote := service.Note{
-		Author:      note.Author,
-		Title:       cleanTitle,
-		Body:        string(cleanInput),
-		DateCreated: created,
-		Link:        note.Link,
-	}
-	_, err = s.Client.Update().Index(s.index).
+	logging.Logger.Debug("updating note in search")
+	indexableNote := cleanNote(note)
+	_, err := s.Client.Update().Index(s.index).
 		Type(s.docType).
 		Id(note.Id).
 		Doc(indexableNote).
@@ -292,9 +263,23 @@ func (s *NoteManager) Update(ctx context.Context, note *notes.Note) error {
 		Do(ctx)
 
 	if err != nil {
+		logging.Logger.Errorf("failed to put note in elasticsearch", "err", err)
 		return err
 	}
+
 	return nil
+}
+
+func cleanNote(note *notes.Note) service.Note {
+	cleanInput := blackfriday.Run([]byte(note.Body))
+	cleanInput = bluemonday.UGCPolicy().SanitizeBytes(cleanInput)
+
+	cleanTitle := bluemonday.UGCPolicy().Sanitize(note.Title)
+	indexableNote := service.ToMongo(note)
+	indexableNote.Title = cleanTitle
+	indexableNote.Body = string(cleanInput)
+
+	return indexableNote
 }
 
 func (s *NoteManager) Delete(ctx context.Context, id string) error {
