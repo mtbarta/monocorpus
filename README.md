@@ -24,13 +24,20 @@ This repo is a collection of microservices and scripts to deploy the service. It
 
 ## How it Works
 
+**gateway proxying into gRPC**
 MonoCorpus uses Vuejs on the frontend, GraphQL as a gateway layer between HTTP and grpc calls, and golang microservices in the backend.
 
-MonoCorpus relies on Keycloak for user auth, traefik as a proxy to the backend, and Elasticsearch for full text search.
+**async messaging**
+As notes are written and sent to the backend, we save them and then send them to a messaging platform for other services to pick up asynchronously. 
+
+**robust authentication**
+We use keycloak to provide authentication and authorization of users. Every user is able to enable two-factor auth for their account.
 
 Microservices:
 * Notes
   - CRUD functions to Mongo.
+* Search
+  - Async CRUD functions to add notes to Elasticsearch.
 * Gateway
   - GraphQL interface to notes and search.
   
@@ -53,16 +60,13 @@ SEARCH_DATA_LOC=/data/es
 
 KEYCLOAK_USER=admin
 KEYCLOAK_PASSWORD=admin
-
-KEY=INSERT_KEYCLOAK_REALM_PUBLIC_KEY
 ```
 
-Deployment requires the gateway to be aware of keycloak's public key for token decryption.
+There are a couple snags that I've run into deploying this:
 
-1. `docker-compose up -d keycloak` to bring up the keycloak instance.
-2. Find the notes realm public key and replace the dummy key in the `.env` file.
+1. the system needs to be aware of the host name. This is for proper routing of calls, decryption of tokens, and ACME support in traefik.
 3. Elasticsearch may need permissions to write to your elasticsearch data directory. Run `chown -R 1000:1000 es` to fix this.
-4. Keycloak's realm requires knowledge of valid redirect urls. If you are not running on localhost, this needs to be changed.
+4. Keycloak's realm requires knowledge of valid redirect urls. If you are not running on localhost, this needs to be changed. You can boot up keycloak, and go it it's endpoint at `/auth/admin` and login with the above user and password. https://www.keycloak.org/docs/latest/server_admin/index.html#_clients has more information about where to navigate to change client urls.
 5. `docker-compose up -d` to bring the whole system up.
 
 ## Notable Dependencies
@@ -79,7 +83,7 @@ Authentication - [Keycloak](https://github.com/keycloak/keycloak)
 
 ## How to Contribute
 
-Please feel free to send me a PR. There's a lot of low-hanging fruit across this project -- refactoring, documentation, testing. Let me know if there's something you want to work on and we can discuss.
+Please feel free to send me a PR. There's a lot of low-hanging fruit across this project -- refactoring, documentation, testing, new features. Let me know if there's something you want to work on and we can discuss.
 
 Please rebase PRs if necessary -- https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request
 
