@@ -110,6 +110,9 @@ export default {
 </script>
 
 <style scoped>
+/* highlightjs style */
+@import '/static/highlightjs/a11y-light.css';
+
   .markdown .inline-katex .katex {
     display: inline;
     text-align: initial;

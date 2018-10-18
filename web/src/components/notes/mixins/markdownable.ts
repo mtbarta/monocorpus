@@ -6,7 +6,11 @@ import katex from 'katex'
 marked.setOptions({
   gfm: true,
   smartLists: true,
-  breaks: true
+  breaks: true,
+  sanitize: false,
+  highlight: function(code) {
+    return require('highlight.js').highlightAuto(code).value;
+  }
 })
 
 const renderer = new marked.Renderer();
