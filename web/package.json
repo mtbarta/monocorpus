@@ -23,6 +23,7 @@
     "dotenv-webpack": "^1.5.7",
     "graphql": "^0.13.1",
     "graphql-tag": "^2.8.0",
+    "highlight.js": "^9.13.1",
     "jest-transform-graphql": "^2.1.0",
     "katex": "^0.9.0",
     "keycloak-js": "^4.0.0-beta.1",
