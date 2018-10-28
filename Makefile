@@ -9,5 +9,5 @@ build:
 containers:
 	cd services/notes && $(MAKE) container
 	cd services/gateway && $(MAKE) container
-	cd services/frontend && $(MAKE) container
-	cd servioces/keycloak && $(MAKE) container
+	cd web && $(MAKE) container
+	cd services/keycloak && $(MAKE) container

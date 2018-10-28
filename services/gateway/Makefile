@@ -3,6 +3,7 @@ VERSION?=latest
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
 PARENT_DIR="$(dirname "$(CURRENT_DIR)")"
+GOPATH:=$(shell go env GOPATH)
 
 #make sure GOBIN and GOPATH are set!
 

@@ -11,6 +11,6 @@ build:
 	npm run build
 	
 container:
-	cp ../../docker/.env .env
+	cp ../docker/.env .env
 	docker build -t $(CURRENT_DIR):$(VERSION) .
 	rm .env
