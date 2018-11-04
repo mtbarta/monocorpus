@@ -1,8 +1,8 @@
 ---
 layout: default
-img: equation.png
 category: Services
-title: Markdown and KaTex support
+img: teams.png
+title: Work as a team
 description: |
 ---
-Render markdown and KaTex directly in your notes.
+Use Team Projects to share common processes and knowledge in a central location.

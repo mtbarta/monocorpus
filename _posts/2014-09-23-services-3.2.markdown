@@ -1,10 +1,8 @@
 ---
 layout: default
-img: arxiv-support.gif
 category: Services
-title: Import Arxiv papers
+img: dashboard.png
+title: Track your work
 description: |
 ---
-Automatically import Arxiv paper abstracts into a markdown editor.
-
-Create personalized lists of papers that can be searched by abstract.
+See aggregate stats in your dashboard to know what you've accomplished. Jump back into your work faster.

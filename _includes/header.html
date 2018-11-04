@@ -43,6 +43,11 @@
 						<h3>{{ page.subTitle }}</h3>
 						<hr class="intro-divider">
 						<ul class="list-inline intro-social-buttons">
+                            <li>
+                                    <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#subscribeModal">
+                                            Sign Up
+                                        </button>
+                            </li>
 							{% for social in site.social %}
 							<li>
 								<a href="{{ social.url }}" class="btn btn-default btn-lg"><i class="fa fa-{{ social.title }} fa-fw"></i> <span class="network-name">{{ social.title }}</span></a>

@@ -5,4 +5,4 @@ category: Services
 title: Record notes and share solutions
 description: |
 ---
-  Take notes on bugs and code organization to quickly find solutions. Learn incrementally by never forgetting what you've done.
+  Take notes in markdown or Latex. Learn incrementally by never forgetting what you've done.
