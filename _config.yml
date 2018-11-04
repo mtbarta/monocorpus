@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: https://mtbarta.github.io/monocorpus
+url: monocorpus.com
 title: MonoCorpus
 email: matt@monocorpus.com
 author: Matt Barta
@@ -34,9 +34,6 @@ about: >
   <p>
   Increase documentation for yourself and your team without slowing
   your velocity. Take notes as part of your process instead of dedicating
-  time to writing it.
-  </p>
-  <p>
-  Instantly ramp up on projects.
+  time to writing them.
   </p>
 
