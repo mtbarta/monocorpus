@@ -77,7 +77,7 @@ export default Vue.extend({
       const out = sanitize(marked(code.replace(/\\/g, '\\\\')), {
         allowedTags: false,
         allowedAttributes: {
-          '*': ['class']
+          '*': ['class', 'style']
         }
       })
       return out
