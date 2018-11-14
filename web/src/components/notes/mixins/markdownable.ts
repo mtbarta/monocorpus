@@ -3,16 +3,6 @@ import marked from 'marked';
 import sanitize from 'sanitize-html'
 import katex from 'katex'
 
-marked.setOptions({
-  gfm: true,
-  smartLists: true,
-  breaks: true,
-  sanitize: false,
-  highlight: function(code) {
-    return require('highlight.js').highlightAuto(code).value;
-  }
-})
-
 const renderer = new marked.Renderer();
 
 /**
@@ -66,8 +56,20 @@ renderer.paragraph = (t) => {
       }
     }
   }
+
   return `<p class="${inline ? 'inline-katex' : ''}">${text}</p>`;
 };
+
+marked.setOptions({
+  gfm: true,
+  smartLists: true,
+  breaks: true,
+  sanitize: true,
+  renderer,
+  highlight: function(code) {
+    return require('highlight.js').highlightAuto(code).value;
+  }
+})
 
 export default Vue.extend({
   methods: {
@@ -75,10 +77,9 @@ export default Vue.extend({
       const out = sanitize(marked(code.replace(/\\/g, '\\\\')), {
         allowedTags: false,
         allowedAttributes: {
-          '*': ['class']
+          '*': ['class', 'style']
         }
       })
-
       return out
     }
   }
