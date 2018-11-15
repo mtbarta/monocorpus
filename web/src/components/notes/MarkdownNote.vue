@@ -33,7 +33,7 @@
 </template>
 
 <script>
-require("codemirror/mode/markdown/markdown")
+require("codemirror/mode/gfm/gfm")
 
 import { mixin as clickaway } from 'vue-clickaway';
 import Editor from './components/codemirror/editor.vue'
@@ -66,8 +66,8 @@ export default {
           height: 'auto',
           tabSize: 4,
           mode:  {
-            name: "markdown",
-            highlightFormatting: true
+            name: "gfm",
+            highlightFormatting: false
           },
           lineNumbers: false,
           line: true,
@@ -117,6 +117,7 @@ export default {
   .markdown .inline-katex .katex {
     display: inline;
     text-align: initial;
+    line-height: 1.8em;
   }
 
 </style>

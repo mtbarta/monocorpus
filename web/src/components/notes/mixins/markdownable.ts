@@ -60,6 +60,17 @@ renderer.paragraph = (t) => {
   return `<p class="${inline ? 'inline-katex' : ''}">${text}</p>`;
 };
 
+renderer.listitem = function(text) {
+  if (/^\s*\[[x ]\]\s*/.test(text)) {
+  text = text
+    .replace(/^\s*\[ \]\s*/, '<i class="icon material-icons">check_box_outline_blank</i> ')
+    .replace(/^\s*\[x\]\s*/, '<i class="icon material-icons">check_box</i> ');
+      return '<li style="list-style: none">' + text + '</li>';
+    } else {
+      return '<li>' + text + '</li>';
+    }
+  };
+
 marked.setOptions({
   gfm: true,
   smartLists: true,
