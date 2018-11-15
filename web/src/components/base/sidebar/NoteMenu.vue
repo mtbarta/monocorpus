@@ -3,6 +3,13 @@
     v-on-clickaway="resetActive"
   >
     <v-subheader> Notes </v-subheader>
+      <v-subheader class="caption text-md-left">
+        <note-picker
+            :start="noteFilter.from"
+            :end="noteFilter.to" >
+          </note-picker>
+      </v-subheader>
+
         <v-list-tile v-for="item in uniqueTitles" 
             :key="item.index" 
             class="note-menu-title"
@@ -25,11 +32,15 @@
 import { mapState, mapGetters, mapActions } from 'vuex'
 import titleQuery from '@/graphql/noteTitles.graphql'
 import { mixin as clickaway } from 'vue-clickaway';
+import NotePicker from '@/components/notebook/menu/NotePicker.vue'
 
 export default {
     name: 'note-menu',
     props: {
       sidebarClosing: Boolean
+    },
+    components: {
+      NotePicker
     },
     mixins: [
       clickaway
@@ -59,6 +70,12 @@ export default {
       ]),
       titleFilter() {
         return this.noteFilter.getTitleQuery()
+      },
+      startTime() {
+        return this.noteFilter.from
+      },
+      endTime() {
+        return this.noteFilter.to
       },
       activeIndex() {
         return this.active
