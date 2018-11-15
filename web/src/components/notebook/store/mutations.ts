@@ -7,6 +7,12 @@ export default {
   UPDATE_NOTE_FILTER_TITLE (state, title: string) {
     state.noteFilter.title = title
   },
+  UPDATE_NOTE_FILTER_START (state, start) {
+    state.noteFilter.from = start
+  },
+  UPDATE_NOTE_FILTER_END (state, end) {
+    state.noteFilter.end = end
+  },
   UPDATE_NOTE_FILTER_AUTHORS(state: any, emails: string[]) {
     state.noteFilter.authors = emails
   },
