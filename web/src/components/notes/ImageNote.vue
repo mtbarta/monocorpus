@@ -38,7 +38,7 @@
 
 <script lang='ts'>
 
-import TitleBox from './components/Title'
+import TitleBox from './components/Title.vue'
 import Note from './note'
 import Viewer from "./components/Viewer.vue"
 
@@ -122,7 +122,7 @@ export default {
 
         const reader = new FileReader()
 
-        reader.onload = (event: FileReaderEvent) => {
+        reader.onload = (event: FileReaderProgressEvent) => {
           n.image = event.target.result
           this.image = event.target.result
         }
