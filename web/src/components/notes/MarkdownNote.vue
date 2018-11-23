@@ -121,6 +121,8 @@ export default {
   }
 ul {
   padding-left: .5rem;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
 }
 li {
   padding-left: 1rem;
