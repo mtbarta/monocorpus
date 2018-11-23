@@ -34,28 +34,37 @@ const katexRegexString = `(
 renderer.paragraph = (t) => {
   let text = t;
   let inline = false;
-  if (typeof katex !== 'undefined') {
-    const katexString = text.replace(/&amp;/g, '&')
-      .replace(/&=&/g, '\\space=\\space')
-      .replace(/<(\/?)em>/g, '_');
-    const regex = new RegExp(katexRegexString, 'gi');
-    const matchLocation = katexString.search(regex);
-    const numberOfMatches = katexString.match(regex);
-    if (numberOfMatches && numberOfMatches.length !== 0) {
-      if (matchLocation > 0) {
-        let matches = regex.exec(katexString);
-        inline = true;
-        while (matches !== null) {
-          const renderedKatex = katex.renderToString(matches[0].replace(/\$/g, ''));
-          text = `${text.replace(matches[0], ` ${renderedKatex}`)}`;
-          matches = regex.exec(katexString);
+  try {
+    if (typeof katex !== 'undefined') {
+      const katexString = text.replace(/&amp;/g, '&')
+        .replace(/&=&/g, '\\space=\\space')
+        .replace(/<(\/?)em>/g, '_');
+      const regex = new RegExp(katexRegexString, 'gi');
+      const matchLocation = katexString.search(regex);
+      const numberOfMatches = katexString.match(regex);
+      if (numberOfMatches && numberOfMatches.length !== 0) {
+        if (matchLocation > 0) {
+          let matches = regex.exec(katexString);
+          inline = true;
+          while (matches !== null) {
+            const renderedKatex = katex.renderToString(matches[0].replace(/\$/g, ''), {
+              throwOnError: false
+            });
+            text = `${text.replace(matches[0], ` ${renderedKatex}`)}`;
+            matches = regex.exec(katexString);
+          }
+        } else {
+          const matches = regex.exec(katexString);
+          text = katex.renderToString(matches[2], {
+            throwOnError: false
+          });
         }
-      } else {
-        const matches = regex.exec(katexString);
-        text = katex.renderToString(matches[2]);
       }
     }
+  } catch(x) {
+    return `<p> </p> <p>failed to render latex </p>`;
   }
+  
 
   return `<p class="${inline ? 'inline-katex' : ''}">${text}</p>`;
 };
@@ -75,7 +84,7 @@ marked.setOptions({
   gfm: true,
   smartLists: true,
   breaks: true,
-  sanitize: true,
+  sanitize: false,
   renderer,
   highlight: function(code) {
     return require('highlight.js').highlightAuto(code).value;
@@ -85,13 +94,18 @@ marked.setOptions({
 export default Vue.extend({
   methods: {
     renderCode(code: string): string {
-      const out = sanitize(marked(code.replace(/\\/g, '\\\\')), {
-        allowedTags: false,
-        allowedAttributes: {
-          '*': ['class', 'style']
-        }
-      })
-      return out
+      try{
+        const out = sanitize(marked(code.replace(/\\/g, '\\\\')), {
+          allowedTags: true,
+          allowedAttributes: {
+            '*': ['class', 'style']
+          }
+        })
+        return out
+      } catch (error) {
+        return ''
+      }
+      
     }
   }
 })

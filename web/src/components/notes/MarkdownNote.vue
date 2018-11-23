@@ -119,5 +119,10 @@ export default {
     text-align: initial;
     line-height: 1.8em;
   }
-
+ul {
+  padding-left: .5rem;
+}
+li {
+  padding-left: 1rem;
+}
 </style>
