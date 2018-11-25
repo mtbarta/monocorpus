@@ -96,13 +96,14 @@ export default Vue.extend({
     renderCode(code: string): string {
       try{
         const out = sanitize(marked(code.replace(/\\/g, '\\\\')), {
-          allowedTags: true,
+          allowedTags: false,
           allowedAttributes: {
             '*': ['class', 'style']
           }
         })
         return out
       } catch (error) {
+        console.log(error)
         return ''
       }
       
