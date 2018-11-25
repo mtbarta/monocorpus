@@ -8,11 +8,11 @@ export default {
     updateNoteFilterAuthors: ({commit}, emails) => {
       commit("UPDATE_NOTE_FILTER_AUTHORS", emails)
     },
-    updateNoteFilterStart: ({commit}, notefilter) => {
-      commit("UPDATE_NOTE_FILTER_START", notefilter)
+    updateNoteFilterStart: ({commit}, start) => {
+      commit("UPDATE_NOTE_FILTER_START", start)
     },
-    updateNoteFilterEnd: ({commit}, notefilter) => {
-      commit("UPDATE_NOTE_FILTER_END", notefilter)
+    updateNoteFilterEnd: ({commit}, end) => {
+      commit("UPDATE_NOTE_FILTER_END", end)
     },
     storeInitialFilter: ({commit}, query) => {
       commit("STORE_INITIAL_FILTER", query)
