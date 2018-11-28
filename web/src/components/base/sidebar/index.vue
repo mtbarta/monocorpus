@@ -11,12 +11,18 @@
 
     <user-menu />
     
-    <path-link
-      name="Dashboard"
-    />
-    <path-link
-      name="Notebook"
-    />
+    <v-list-tile dense ripple 
+      v-for="item in pages"
+      :key="item.name"
+      v-model="item.active"
+      :to="item.link">
+      <v-list-tile-action>
+        <v-icon>{{item.icon}} </v-icon>
+      </v-list-tile-action>
+      <v-list-tile-content>
+        <span>{{item.name}}</span>
+      </v-list-tile-content>
+  </v-list-tile>
 
     <note-menu />
 
@@ -33,7 +39,6 @@
 import Vue from 'vue'
 import NoteMenu from './NoteMenu.vue'
 import UserMenu from './UserMenu.vue'
-import PathLink from './PathLink.vue'
 import LogoutLink from './LogoutLink.vue'
 
 export default Vue.extend({
@@ -41,7 +46,6 @@ export default Vue.extend({
   components: {
     NoteMenu,
     UserMenu,
-    PathLink,
     LogoutLink
   },
   props: {
@@ -53,6 +57,23 @@ export default Vue.extend({
     },
     clipped: {
       type: Boolean
+    }
+  },
+
+  data() {
+    return {
+      pages: [
+                {
+                    name: 'Dashboard',
+                    link: '/',
+                    icon: 'collections_bookmark'
+                },
+                {
+                    name: 'Notebook',
+                    link: '/notebook',
+                    icon: 'collections_bookmark'
+                }
+            ]
     }
   }
 })
