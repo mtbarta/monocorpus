@@ -1,6 +1,10 @@
 # MonoCorpus
 https://mtbarta.github.io/monocorpus/
 
+**DEPRECATED**   
+Unfortunately, I accepted a job where this project is a conflict of interest. This project will be in maintanence mode from here on out. 
+
+***
 MonoCorpus is a tool to record code, notes, and papers during
 the development of software and machine learning algorithms. It
 lets you lookup previous bugs and relevant notes to quickly solve new problems and bugs.
